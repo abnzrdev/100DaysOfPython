@@ -5,19 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="52c3132e-52b3-47b1-95ac-64859cf979c4" name="Changes" comment="Add all the files">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/100 Days of Code - The Complete Python Pro Bootcamp.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/edu_terms.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/externalDependencies.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/frameworkLessonHistory/storage.storageData" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/frameworkLessonHistory/storage.storageRecordIndex" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Day 2/Type Error, Checking and Conversion/task-info.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Day 2/Type Error, Checking and Conversion/task-info.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/edu_terms.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/edu_terms.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Day 2/Mathematical Operations/task-info.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Day 2/Mathematical Operations/task-info.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Day 2/Mathematical Operations/task.py" beforeDir="false" afterPath="$PROJECT_DIR$/Day 2/Mathematical Operations/task.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Day 2/Number Manipulation/task-info.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Day 2/Number Manipulation/task-info.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Day 2/Number Manipulation/task.py" beforeDir="false" afterPath="$PROJECT_DIR$/Day 2/Number Manipulation/task.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Day 2/Tip Calculator Project/task-info.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Day 2/Tip Calculator Project/task-info.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Day 2/Tip Calculator Project/task.py" beforeDir="false" afterPath="$PROJECT_DIR$/Day 2/Tip Calculator Project/task.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Day 2/Type Error, Checking and Conversion/task.py" beforeDir="false" afterPath="$PROJECT_DIR$/Day 2/Type Error, Checking and Conversion/task.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Day 3/If Else/task-info.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/Day 3/If Else/task-info.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,18 +24,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "abnzrdev"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;abnzrdev&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/abnzrdev/100DaysOfPython.git",
-    "accountId": "745d5b2e-5449-4ab9-9fef-791c6598ea46"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/abnzrdev/100DaysOfPython.git&quot;,
+    &quot;accountId&quot;: &quot;745d5b2e-5449-4ab9-9fef-791c6598ea46&quot;
   }
-}]]></component>
+}</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Day 1/task/solution.py" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Day 1/task/task.py" root0="FORCE_HIGHLIGHTING" />
@@ -163,24 +160,26 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Edu.IsLocalCourse": "true",
-    "Edu.LearningObjectsStorageType": "SQLite",
-    "Edu.Yaml.Migrate": "true",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.task.executor": "Run",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "D:/Projects/PythonProjects/100 Days of Code - The Complete Python Pro Bootcamp",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Edu.IsLocalCourse&quot;: &quot;true&quot;,
+    &quot;Edu.LearningObjectsStorageType&quot;: &quot;SQLite&quot;,
+    &quot;Edu.Yaml.Migrate&quot;: &quot;true&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.solution.executor&quot;: &quot;Run&quot;,
+    &quot;Python.task.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Projects/PythonProjects/100 Days of Code - The Complete Python Pro Bootcamp&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -198,6 +197,9 @@
       <updated>1749402625457</updated>
       <workItem from="1749402627363" duration="2326000" />
       <workItem from="1749405451013" duration="496000" />
+      <workItem from="1749405966697" duration="707000" />
+      <workItem from="1749453288356" duration="2286000" />
+      <workItem from="1749480071218" duration="11000" />
     </task>
     <task id="LOCAL-00001" summary="gedf">
       <option name="closed" value="true" />
@@ -215,7 +217,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749405807569</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Add all the files">
+      <option name="closed" value="true" />
+      <created>1749405997042</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1749405997042</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -227,6 +237,7 @@
     <option name="LAST_COMMIT_MESSAGE" value="Add all the files" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/100_Days_of_Code___The_Complete_Python_Pro_Bootcamp$task.coverage" NAME="task Coverage Results" MODIFIED="1749405144321" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Day 1/task" />
+    <SUITE FILE_PATH="coverage/100_Days_of_Code___The_Complete_Python_Pro_Bootcamp$solution.coverage" NAME="solution Coverage Results" MODIFIED="1749454763388" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Day 2/Tip Calculator Project" />
+    <SUITE FILE_PATH="coverage/100_Days_of_Code___The_Complete_Python_Pro_Bootcamp$task.coverage" NAME="task Coverage Results" MODIFIED="1749454742441" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Day 2/Tip Calculator Project" />
   </component>
 </project>
