@@ -38,6 +38,7 @@ print(triple(5))  # 15
 - Programs built around objects that contain data and code
 - Classes serve as templates/blueprints for creating objects
 - Objects have properties (attributes) and behaviors (methods)
+- When creating programs using oop the thing that someone has to care about what it has and what it does.
 
 ```python
 # Creating different objects from the same class template
