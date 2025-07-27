@@ -1,6 +1,6 @@
 # 📝 OOP Notes - Coffee Machine Project - Abenezer
 
-## 🎯 Core Concepts
+## 🎯 Core Concepts - 
 
 ### 🏗️ Classes & Objects
 • **Class** = Blueprint/template (like a house plan)
