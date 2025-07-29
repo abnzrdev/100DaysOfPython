@@ -115,3 +115,111 @@ Most modern applications combine multiple paradigms:
 Choose the right tool for each specific problem rather than trying to force everything into one paradigm.
 
 For your coffee machine project, consider a mix of OOP (to model the machine itself) with some functional concepts (for data processing) to create clean, maintainable code.
+
+#### Deep Dive into SOLID Principles
+
+##### Open/Closed Principle
+The class itself should not be modified - instead, extend functionality by creating new classes that inherit from it.
+
+```python
+# Original class - DON'T MODIFY THIS
+class Shape:
+    def area(self):
+        pass
+
+# RIGHT way - extending without modifying the original
+class Circle(Shape):  # ✅ New class extends Shape without changing it
+    def __init__(self, radius):
+        self.radius = radius
+
+    def area(self):
+        return 3.14 * self.radius ** 2
+
+class Rectangle(Shape):  # ✅ Another extension without changing original
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+    def area(self):
+        return self.width * self.height
+
+# Think of it like building blocks - don't break open existing blocks, just stack new ones on top
+class CoffeeMachine:
+    def make_coffee(self):
+        return "Basic coffee"
+
+class EspressoMachine(CoffeeMachine):
+    def make_espresso(self):  # New feature added without changing original
+        return "Espresso shot"
+```
+
+##### Liskov Substitution Principle
+When creating a subclass, it must do the same thing as the parent class, just in a different way. All subclasses must be able to substitute their parent class.
+
+```python
+class Bird:
+    def move(self):
+        pass
+
+class FlyingBird(Bird):
+    def move(self):
+        print("Flying through the air")
+
+class WalkingBird(Bird):
+    def move(self):
+        print("Walking on the ground")
+
+# Both can substitute Bird - they both move, just differently
+def make_bird_move(bird: Bird):
+    bird.move()  # Works with any Bird subclass
+
+make_bird_move(FlyingBird())  # Flying through the air
+make_bird_move(WalkingBird())  # Walking on the ground
+```
+
+##### Interface Segregation Principle
+Don't add methods that a class doesn't need. Include only the functionality and attributes that the class can actually use.
+
+```python
+# BAD - forcing classes to implement methods they don't need
+class AllInOneDevice:
+    def print_document(self):
+        pass
+    def scan_document(self):
+        pass
+    def fax_document(self):
+        pass
+
+# GOOD - separate interfaces for different capabilities
+class Printer:
+    def print_document(self):
+        pass
+
+class Scanner:
+    def scan_document(self):
+        pass
+
+class SimplePrinter(Printer):  # Only implements what it needs
+    def print_document(self):
+        print("Printing document")
+
+class AllInOnePrinter(Printer, Scanner):  # Implements multiple interfaces only if it can
+    def print_document(self):
+        print("Printing document")
+    
+    def scan_document(self):
+        print("Scanning document")
+```
+##### Dependency Inversion Principle
+High-level classes should depend on concepts/abstractions, not on specific concrete implementations. Think of it like electrical outlets - your house depends on the outlet standard, not on specific devices.
+
+**What it means:** Instead of your main code being tied to specific implementations, it should work with general concepts that any implementation can follow.
+
+**The Three-Part Structure:**
+
+1. **Concept Class (Abstract/Interface)** - defines what should happen
+```python
+class PaymentMethod:
+    def pay(self, amount):
+        pass  # Just the concept, doesn't do actual work
+```
