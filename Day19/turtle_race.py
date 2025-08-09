@@ -38,6 +38,9 @@ tur5.color("purple")
 tur5.penup()
 tur5.goto(-490,-60)
 
+# Creating a bet with the user
+user_choice = input("Which one will win : ")
+
 while True:
     tur1.forward(random.randint(1, 10))
     tur2.forward(random.randint(1, 10))
