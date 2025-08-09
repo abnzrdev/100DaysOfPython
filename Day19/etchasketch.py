@@ -1,51 +1,59 @@
 from turtle import *
 
-while True:
-    tur = Turtle()
-    scr = Screen()
-    scr.listen()
-    tur.hideturtle()
-    tur.pensize(5)
 
-    def moveforward():
-        x_cor = tur.xcor()
-        tur.setx(x_cor + 10)
+tur = Turtle()
+scr = Screen()
 
-    def moveback():
-        x_cor = tur.xcor()
-        tur.setx(x_cor - 10)
+# Tweaking the screen
+scr.title("Etch Sketch")
+scr.bgcolor("black")
+scr.listen()
 
-    def moveup():
-        y_cor = tur.ycor()
-        tur.sety(y_cor + 10)
+tur.pensize(3)
+tur.pencolor("white")
+tur.speed(0)
+tur.hideturtle()
 
-    def movedown():
-        y_cor = tur.ycor()
-        tur.sety(y_cor - 10)
+def moveforward():
+    x_cor = tur.xcor()
+    tur.setx(x_cor + 10)
 
-    def upper_right_curve():
-        tur.pendown()
-        tur.circle(30,20)
+def moveback():
+    x_cor = tur.xcor()
+    tur.setx(x_cor - 10)
 
-    def upper_left_curve():
-        tur.pendown()
-        tur.circle(-30,20)
+def moveup():
+    y_cor = tur.ycor()
+    tur.sety(y_cor + 10)
 
-    def clear():
-        tur.clear()
-        tur.penup()
-        tur.home()
-        tur.pendown()
+def movedown():
+    y_cor = tur.ycor()
+    tur.sety(y_cor - 10)
 
-    scr.onkeypress(fun=moveforward, key="Right")
-    scr.onkeypress(fun=moveback, key="Left")
-    scr.onkeypress(fun=moveup, key="Up")
-    scr.onkeypress(fun=movedown, key="Down")
-    scr.onkey(fun=clear, key="c")
-    scr.onkey(fun=upper_right_curve, key="d")
-    scr.onkey(fun=upper_left_curve, key="h")
+def upper_right_curve():
+    tur.pendown()
+    tur.circle(30,20)
 
-    scr.exitonclick()
+def upper_left_curve():
+    tur.pendown()
+    tur.circle(-30,20)
 
+def turn_red():
+    tur.pencolor("red")
 
+def clear():
+    tur.clear()
+    tur.penup()
+    tur.home()
+    tur.pendown()
 
+scr.onkeypress(fun=moveforward, key="Right")
+scr.onkeypress(fun=moveback, key="Left")
+scr.onkeypress(fun=moveup, key="Up")
+scr.onkeypress(fun=movedown, key="Down")
+scr.onkeypress(fun=upper_right_curve, key="d")
+scr.onkeypress(fun=upper_left_curve, key="h")
+scr.onkey(fun=clear, key="c")
+scr.onkey(fun=turn_red, key="r")
+
+scr.exitonclick()
