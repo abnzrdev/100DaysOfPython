@@ -1,0 +1,1354 @@
+﻿    // read and evaluate a Term // get the next Token from the Token stream
+    while (true) {
+    switch (t.kind) { case '+':
+    left += term(); t = ts.get(); break;
+    case '–':
+    left –= term(); t = ts.get(); break;
+    default: ts.putback(t); return left;
+    } }
+    }
+
+Writing a program involves gradually refining your ideas of what you want to do and how you want to express it. In this chapter and the next, we will develop a program from a first vague idea through stages of analysis, design, implementation, testing, redesign, and re-implementation. Our aim is to give you some idea of the kind of thinking that goes on when you develop a piece of code. In the process, we discuss program organization, user-defined types, and input processing.
+    // evaluate Term and add
+// -----
+
+6.1  A problem
+    // evaluate Term and subtract
+6.2.1  Stages of development
+6.2.2  Strategy
+6.3  Back to the calculator!
+    // put t back into the token stream
+    // finally: no more + or –; return the answer
+6.3.3  Implementing tokens
+6.3.4  Using tokens
+6.3.5  Back to the drawing board
+6.4  Grammars
+    double term() {
+    double left = primary();
+    Token t = ts.get();	// get the next Token from the Token stream
+6.5.1  Implementing grammar rules
+    while (true) {
+    switch (t.kind) { case '*':
+    left *= primary(); t = ts.get(); break;
+    case '/':
+    {    double d = primary();
+    if (d == 0) error("divide by zero"); left /= d;
+    t = ts.get(); break;
+    } default:
+    ts.putback(t);	// put t back into the Token stream return left;
+    } }
+    }
+246	CHAPTER  7   •   COMPLETING A  PROGRAM
+
+6.1 A problem
+
+Writing a program starts with a problem; that is, you have a problem that you’d like a program to help solve. Understanding that problem is key to a good program. After all, a program that solves the wrong problem is likely to be of little use to you, however elegant it may be. There are happy accidents when a program just happens to be useful for something for which it was never intended, but let’s not rely on such rare luck. What we want is a program that simply and cleanly solves the problem we decided to solve.
+
+At this stage, what would be a good program to look at? A program that
+
+    • Illustrates design and programming techniques
+    • Gives us a chance to explore the kinds of decisions that a programmer must make and the considerations that go into such decisions
+    2
+    • Is complicated enough to require thought about its design
+    3 =2 2+2 =3
+    • Solves an easily understood problem
+    • Solves a problem that’s worth solving
+    • Has a solution that is small enough to completely present and completely comprehend
+    2 3 4 2+3 2*3 = 2
+    = 3 = 4 = 5
+
+Yes! These are correct answers! But the last answer (6) is missing. We still have a token-look-ahead problem. However, this time the problem is not that our code “eats” characters, but that it doesn’t get any output for an expression until we enter the following expression. The result of an expression isn’t printed imme-diately; the output is postponed until the program has seen the first token of the next expression. Unfortunately, the program doesn’t see that token until we hit Return after the next expression. In a real sense, the program isn’t really wrong; it is just a bit slow responding.
+
+For example, if you enter
+    while (cin) cout << "=" << expression() << '\n';	// version 1
+    2+3.1*4
+
+the program should respond
+
+    14.4
+    double val = 0; while (cin) {
+    Token t = ts.get();
+
+    if (t.kind == 'q') break;	// ‘q’ for “quit”
+    if (t.kind == ';')	// ‘;’ for “print now” cout << "= " << val << '\n';
+    else
+    ts.putback(t); val = expression();
+    }
+
+Ideally, design isn’t a lonely activity.
+
+    2; = 2
+    2+3; = 5
+    3+4*5; = 23
+    q
+Please keep in mind that for this chapter and the next, the way we get to the final version of the program – the journey through partial solutions, ideas, and mistakes – is at least as important as that final version and more important than the language-technical details we encounter along the way (we will get back to those later).
+
+// -----
+
+6.2.1  Stages of development
+Here is a bit of terminology for program development. As you work on a problem you repeatedly go through these stages:
+
+210	CHAPTER  7   •   COMPLETING A  PROGRAM
+    •   Design: Create an overall structure for the system, deciding which parts the implementation should have and how those parts should communi-cate. As part of the design consider which tools – such as libraries – can help you structure the program.
+    •   Implementation: Write the code, debug it, and test that it actually does what it is supposed to do.
+the +? Until we see the + we might be on our way to reading 1.55555. So, we need a new operation. The obvious place to put that is in Token_stream:
+
+6.2.2  Strategy
+    class Token_stream { public:
+    Token get();
+    void putback(Token t);
+    void ignore(char c);
+
+    // get a Token
+    // put a Token back
+    // discard characters up to and including a c
+    private:
+    bool full {false}; Token buffer;
+
+    // is there a Token in the buffer?
+    // here is where we keep a Token put back using // putback()
+    };
+
+How do we want to interact with the calculator? That’s easy: we know how to use cin and cout, but graphical user interfaces (GUIs) are not explained until Chap-ter 16, so we’ll stick to the keyboard and a console window. Given expressions as input from the keyboard, we evaluate them and write out the resulting value to the screen. For example:
+    Expression: 2+2
+Now we need to implement those two Token_stream functions. How do we rep-resent a Token_stream? That is, what data do we need to store in a Token_stream for it to do its job? We need space for any token we put back into the Token_ stream. To simplify, let’s say we can put back at most one token at a time. That happens to be sufficient for our program (and for many, many similar programs). That way, we just need space for one Token and an indicator of whether that space is full or empty:
+    Expression: 2+3–25/5
+    class Token_stream { public:
+    Token get();	// get a Token (get() is defined in §6.8.2) void putback(Token t);	// put a Token back
+    private:
+    bool full {false};	// is there a Token in the buffer?
+    Token buffer;    // here is where we keep a Token put back using putback() };
+    read_a_line
+    calculate	// do the work
+    write_result
+    void Token_stream::putback(Token t) {
+    buffer = t;	// copy t to buffer
+    full = true;	// buffer is now full
+    }
+
+    #include "std_lib_facilities.h"
+
+    int main() {
+    class_name :: member_name
+    int rval; char op; int res;
+    cin>>lval>>op>>rval;	// read something like 1 + 3
+
+
+    if (op=='+')
+    void Token_stream::putback(Token t) {
+    if (full) error("putback() into a full buffer"); buffer = t;	// copy t to buffer
+    full = true;	// buffer is now full }
+
+    // addition
+
+    // subtraction
+
+
+    cout << "Result: " << res << '\n'; keep_window_open();
+    return 0; }
+    Token Token_stream::get() {
+    if (full) {
+    full = false; return buffer;
+    }
+    1.  Clean up the code a bit
+    2.  Add multiplication and division (e.g., 2*3)
+    3.  Add the ability to handle more than one operand (e.g., 1+2+3)
+    // do we already have a Token ready? // remove Token from buffer
+    char ch;
+    cin >> ch;	// note that >> skips whitespace (space, newline, tab, etc.)
+    int main() {
+    switch (ch) {
+    case quit: case print: case '(': case ')': case '+': case '–': case '*': case '/': case '%':
+    return Token{ch};	// let each character represent itself
+    case '.':
+    case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':	// numeric literal {
+    cin.putback(ch);	// put digit back into the input stream
+    double val;
+    cin >> val;	// read a floating-point number return Token{number,val};
+    } default:
+    error("Bad token"); }
+    }
+    case '*':
+    lval *= rval;	// multiply: lval = lval * rval break;
+    case '/':
+    if (full) {	// do we already have a Token ready?
+    full = false;	// remove Token from buffer
+    return buffer;
+    }
+    return 0; }
+    }
+    error("bad expression"); }
+    default:
+    error("Bad token");
+might consider the convention that “multiplication binds tighter than addition” as a silly old convention, but hundreds of years of convention will not disappear just to simplify our programming.
+
+6.3.2 Tokens
+216	CHAPTER  7   •   COMPLETING A  PROGRAM
+
+    1.  We don’t actually require an expression to be on one line. For example:
+        1 + 2
+
+    case '(': case ')': case '+': case '–': case '*': case '/':
+    return Token{ch};	// let each character represent itself
+    3.  How do we remember where a * was?
+To be honest, we had forgotten all about ';' for “print” and 'q' for “quit” in our first version. We didn’t add them until we needed them for our second solution.
+
+Having decided to be super-optimists, we’ll solve problems 1–3 first and not worry about 4 until later.
+182	CHAPTER  6   •  WRITING A  PROGRAM
+
+
+    case '.':
+    case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':	// numeric literal {
+    cin.putback(ch);	// put digit back into the input stream
+    double val;
+    cin >> val;	// read a floating-point number return Token{number,val};
+    }
+
+    45 +
+    11.5 /
+    7
+
+A token is a sequence of characters that represents something we consider a unit, such as a number or an operator. That’s the way a C++ compiler deals with its source. Actually, “tokenizing” in some form or another is the way most analysis of text starts. Following the example of C++ expression, we see the need for three kinds of tokens:
+    •   Floating-point-literals: as deﬁned by C++, e.g., 3.14, 0.274e2, and 42
+    •   Operators: e.g., +, –, *, /, %
+    •   Parentheses: (, )
+
+The floating-point-literals look as if they may become a problem: reading 12 seems much easier than reading 12.3e–3, but calculators do tend to do floating-point arith-metic. Similarly, we suspect that we’ll have to accept parentheses to have our cal-culator deemed useful.
+How do we represent such tokens in our program? We could try to keep track of where each token started (and ended), but that gets messy (especially if we allow expressions to span line boundaries). Also, if we keep a number as a string of characters, we later have to figure out what its value is; that is, if we see 42 and store the characters 4 and 2 somewhere, we then later have to figure out that those characters represent the numerical value 42 (i.e., 4*10+2). The obvious – and con-ventional – solution is to represent each token as a (kind,value) pair. The kind tells us if a token is a number, an operator, or a parenthesis. For a number, and in this example only for a number, we use its numerical value as its value.
+So how do we express the idea of a (kind,value) pair in code? We define a type Token to represent tokens. Why? Remember why we use types: they hold the data we need and give us useful operations on that data. For example, ints hold integers and give us addition, subtraction, multiplication, division, and remainder,
+6.3	BACK TO THE  CALCULATOR!	183
+    #include "std_lib_facilities.h"
+
+    class Token { /* . . . */ };
+    class Token_stream { /* . . . */ };
+6.3.3  Implementing tokens
+    void Token_stream::putback(Token t) { /* . . . */ } Token Token_stream::get() { /* . . . */ }
+something that can represent what “kind” a token is and hold the numeric value for tokens that have one:
+
+    Token_stream ts; double expression();
+    Token:
+    // provides get() and putback()
+    // declaration so that primary() can call expression()
+
+    Token:
+    kind:	number
+
+    double primary() { /* . . . */ } double term() { /* . . . */ } double expression() { /* . . . */ }
+
+    // deal with numbers and parentheses // deal with * and /
+    // deal with + and –
+There are many ways that this idea could be represented in C++ code. Here is the simplest that we found useful:
+
+    int main() { /* . . . */ }	// main loop and deal with errors
+    char kind; double value;
+    };
+216	CHAPTER  7   •   COMPLETING A  PROGRAM
+A Token is a type (like int or char), so it can be used to define variables and hold values. It has two parts (called members): kind and value.The keyword class means “user-defined type”; it indicates that a type with zero or more members is being defined. The first member, kind, is a character, char, so that it conveniently can hold '+' and '*' to represent + and *. We can use it to make types like this:
+
+
+    Token t; t.kind = '+';
+
+    error()	ts	cin
+    // t represents a +
+
+    primary()
+    Token t2; t2.kind = '8'; t2.value = 3.14;
+
+    term()
+    // we use the digit 8 as the “kind” for numbers
+
+    expression()
+We use the member access notation, object_name . member_name, to access a mem-ber. You can read t.kind as “t’s kind” and t2.value as “t2’s value.” We can copy Tokens just as we can copy ints:
+
+    main()
+    if (tt.kind != t.kind) error("impossible!"); t = t2;	// assignment
+    cout << t.value;	// will print 3.14
+
+Given Token, we can represent the expression (1.5+4)*11  using seven tokens like this:
+
+
+    '('	'8'	'+'	'8'
+    1.5	4
+
+CHAPTER  7  REVIEW	217
+    11
+
+
+
+Note that for simple tokens, such as +, we don’t need the value, so we don’t use its value member. We needed a character to mean “number” and picked '8' just because '8' obviously isn’t an operator or a punctuation character. Using '8' to mean “number” is a bit cryptic, but it’ll do for now.
+Token is an example of a C++ user-defined type. A user-defined type can have member functions (operations) as well as data members. For Token, we don't need to define functions because default ways of reading and writing members of a simple user-defined type are provided.
+
+
+    class Token { public:
+    "Welcome to our simple calculator.
+    Please enter expressions using ﬂoating-point numbers."
+
+
+
+    // what kind of token // for numbers: a value
+
+
+We can now initialize (“construct”) Token objects. For example:
+
+
+    Token t1 {'+'}; Token t2 {'8',11.5};
+
+    // initialize t1 so that t1.kind = ‘+’
+    // initialize t2 so that t2.kind = ‘8’ and t2.value = 11.5
+
+
+For more about initializing class objects, see §9.4.2 and §9.7.
+6.3	BACK TO THE  CALCULATOR!	185
+
+
+
+    Token get_token();
+
+    vector<Token> tok;
+
+    // function to read a token from cin
+
+    // we’ll put the tokens here
+
+
+    int main() {
+    while (cin) {
+    Token t = get_token(); tok.push_back(t);
+    }
+    // . . . }
+
+Now we can read an expression first and evaluate later. For example, for 11*12, we get
+
+    '8'             '*'           '8' 11                              12
+
+We can look at that to find the multiplication and its operands. Having done that, we can easily perform the multiplication because the numbers 11 and 12 are stored as numeric values and not as strings.
+Now let’s look at more complex expressions. Given 1+2*3, tok will contain five Tokens:
+
+    '8'             '+'           '8'             '*'           '8' 1                                2                                3
+
+Now we could find the multiply operation by a simple loop:
+
+    for (int i = 0; i<tok.size(); ++i) {
+    if (tok[i].kind=='*') {	// we found a multiply! double d = tok[i–1].value*tok[i+1].value;
+    // now what? }
+    }
+
+Yes, but now what? What do we do with that product d? How do we decide in which order to evaluate the sub-expressions? Well, + comes before * so we can’t just evaluate from left to right. We could try right-to-left evaluation! That would work for 1+2*3 but not for 1*2+3. Worse still, consider 1+2*3+4. This example has to be evaluated “inside out”: 1+(2*3)+4. And how will we handle parentheses, as we eventually will have to do? We seem to have hit a dead end. We need to back off, stop programming for a while, and think about how we read and understand an input string and evaluate it as an arithmetic expression.
+So, this first enthusiastic attempt to solve the problem (writing a calculator) ran out of steam. That’s not uncommon for first tries, and it serves the important role of helping us understand the problem. In this case, it even gave us the useful notion of a token, which itself is an example of the notion of a (name,value) pair that we will encounter again and again. However, we must always make sure that such relatively thoughtless and unplanned “coding” doesn’t steal too much time. We should do very little programming before we have done at least a bit of analysis (understanding the problem) and design (deciding on an overall structure of a solution).
+On the other hand, why shouldn’t we be able to find a simple solution to this problem? It doesn’t seem to be all that difficult. If nothing else, trying would give us a better appreciation of the problem and the eventual solution. Con-sider what you might do right away. For example, look at the input 12.5+2. We could tokenize that, decide that the expression was simple, and compute the answer. That may be a bit messy, but straightforward, so maybe we could proceed in this direction and find something that’s good enough! Consider what to do if we found both a + and a * in the line 2+3*4. That too can be
+handled by “brute force.” How would we deal with a complicated expression, such as 1+2*3/4%5+(6–7*(8))? And how would we deal with errors, such as 2+*3 and 2&3? Consider this for a while, maybe doodling a bit on a piece of
+paper trying to outline possible solutions and interesting or important input expressions.
+
+
+6.3.5  Back to the drawing board
+Now, we will look at the problem again and try not to dash ahead with another half-baked solution. One thing that we did discover was that having the program (calculator) evaluate only a single expression was tedious. We would like to be
+    P (a,b)= (a −b)!,
+    a!
+
+    where ! is used as a suffix factorial operator. For example, 4! is 4*3*2*1.
+    Combinations are similar to permutations, except that the order of the objects doesn’t matter. For example, if you were making a “banana split” sundae and wished to use three different flavors of ice cream out of five that you had, you wouldn’t care if you used a scoop of vanilla at the beginning or the end; you would still have used vanilla. The formula for combinations is
+    while (not_finished) {
+    C (a,b)= P (a,b).
+    b!
+    }
+    Design a program that asks users for two numbers, asks them whether they want to calculate permutations or combinations, and prints out the result. This will have several parts. Do an analysis of the above require-ments. Write pseudo code for the program, and break it into sub-components. This program should have error checking. Make sure that all erroneous inputs will generate good error messages.
+
+    program startup is unfortunately (and unreasonably) slow on many modern operat-ing systems, so we’d better not rely on that.
+
+As we look at this pseudo code, our early attempts at solutions, and our ex-amples of use, several questions – some with tentative answers – arise:
+1.  If we type in 45+5/7, how do we find the individual parts 45, +, 5, /, and 7 in the input? (Tokenize!)
+2.  What terminates an input expression? A newline, of course! (Always be suspicious of “of course”: “of course” is not a reason.)
+
+grammar implementation interface member function parser
+private
+
+
+
+prototype pseudo code public
+syntax analyzer token
+use case
+
+
+Exercises
+
+1.  If you haven’t already, do the Try this exercises from this chapter.
+2.  Add the ability to use {} as well as () in the program, so that {(4+5)*6} / (3+4) will be a valid expression.
+3.  Add a factorial operator: use a suffix ! operator to represent “factorial.” For example, the expression 7! means 7 * 6 * 5 * 4 * 3 * 2 * 1. Make ! bind tighter than * and /; that is, 7*8! means 7*(8!) rather than (7*8)!. Begin by modifying the grammar to account for a higher-level operator. To agree with the standard mathematical definition of factorial, let 0! evaluate to 1. Hint: The calculator functions deal with doubles, but factorial is defined only for ints, so just for x!, assign the x to an int and calculate the factorial of that int.
+4.  Define a class Name_value that holds a string and a value. Rework exer-cise 19 in Chapter 4 to use a vector<Name_value> instead of two vectors.
+5.  Add the article the to the “English” grammar in §6.4.1, so that it can describe sentences such as “The birds fly but the fish swim.”
+CHAPTER  6  EXERCISES	219
+
+
+6.  Write a program that checks if a sentence is correct according to the “En-glish” grammar in §6.4.1. Assume that every sentence is terminated by a full stop (.) surrounded by whitespace. For example, birds fly but the fish swim . is a sentence, but birds fly but the fish swim (terminating dot missing) and birds fly but the fish swim. (no space before dot) are not. For each sentence entered, the program should simply respond “OK” or “not OK.” Hint: Don’t bother with tokens; just read into a string using >>.
+7.  Write a grammar for bitwise logical expressions. A bitwise logical ex-pression is much like an arithmetic expression except that the operators are ! (not), ~ (complement), & (and), | (or), and ^ (exclusive or). Each operator does its operation to each bit of its integer operands (see §25.5). ! and ~ are prefix unary operators. A ^ binds tighter than a | (just as * binds tighter than +) so that x|y^z means x|(y^z) rather than (x|y)^z. The & operator binds tighter than ^ so that x^y&z means x^(y&z).
+8.  Redo the “Bulls and Cows” game from exercise 12 in Chapter 5 to use four letters rather than four digits.
+9.  Write a program that reads digits and composes them into integers. For example, 123 is read as the characters 1, 2, and 3. The program should output 123 is 1 hundred and 2 tens and 3 ones. The number should be output as an int value. Handle numbers with one, two, three, or four
+digits. Hint: To get the integer value 5 from the character '5' subtract '0', that is, '5'–'0'==5.
+10.  A permutation is an ordered subset of a set. For example, say you wanted to pick a combination to a vault. There are 60 possible numbers, and you need three different numbers for the combination. There are P(60,3) permutations for the combination, where P is defined by the formula
+
+P (a,b)= (a −b)!,
+a!
+
+where ! is used as a suffix factorial operator. For example, 4! is 4*3*2*1.
+Combinations are similar to permutations, except that the order of the objects doesn’t matter. For example, if you were making a “banana split” sundae and wished to use three different flavors of ice cream out of five that you had, you wouldn’t care if you used a scoop of vanilla at the beginning or the end; you would still have used vanilla. The formula for combinations is
+
+C (a,b)= P (a,b).
+b!
+220	CHAPTER  6   •  WRITING A  PROGRAM
+
+
+Design a program that asks users for two numbers, asks them whether they want to calculate permutations or combinations, and prints out the result. This will have several parts. Do an analysis of the above require-ments. Write exactly what the program will have to do. Then, go into the design phase. Write pseudo code for the program, and break it into sub-components. This program should have error checking. Make sure that all erroneous inputs will generate good error messages.
+
+Postscript
+
+Making sense of input is one of the fundamental programming activities. Every program somehow faces that problem. Making sense of something directly pro-duced by a human is among the hardest problems. For example, many aspects of voice recognition are still a research problem. Simple variations of this problem, such as our calculator, cope by using a grammar to deﬁne the input.
+
+
+7 Completing a Program
+
+
+“It ain’t over till the fat lady sings.”
+
+—Opera proverb
+
+
+
+
+
+riting a program involves gradually refining your ideas
+W
+
+of what you want to do and how you want to express
+
+it. In Chapter 6, we produced the initial working version of a
+
+calculator program. Here, we’ll refine it. Completing the pro-
+
+gram — that is, making it fit for users and maintainers — involves
+
+improving the user interface, doing some serious work on er-
+
+ror handling, adding a few useful features, and restructuring the
+
+code for ease of understanding and modification.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+221
+222	CHAPTER  7   •   COMPLETING A  PROGRAM
+
+
+
+
+7.1  Introduction
+7.2  Input and output 7.3  Error handling
+7.4  Negative numbers 7.5  Remainder: %
+7.6  Cleaning up the code
+7.6.1  Symbolic constants 7.6.2  Use of functions 7.6.3  Code layout
+7.6.4  Commenting
+
+7.7  Recovering from errors 7.8  Variables
+7.8.1  Variables and deﬁnitions 7.8.2  Introducing names
+7.8.3  Predeﬁned names 7.8.4  Are we there yet?
+
+
+
+7.1  Introduction
+
+When your program first starts running “reasonably,” you’re probably about half-way finished. For a large program or a program that could do harm if it misbe-haved, you will be nowhere near halfway finished. Once the program “basically works,” the real fun begins! That’s when we have enough working code to exper-iment with ideas.
+In this chapter, we will guide you through the considerations a professional programmer might have trying to improve the calculator from Chapter 6. Note that the questions asked about the program and the issues considered here are far more interesting than the calculator itself. What we do is to give an example of how real programs evolve under the pressure of requirements and constraints and of how a programmer can gradually improve code.
+
+7.2  Input and output
+
+If you look back to the beginning of Chapter 6, you’ll find that we decided to prompt the user with
+
+Expression:
+
+and to report back answers with
+
+Result:
+
+In the heat of getting the program to run, we forgot all about that. That’s pretty typical. We can’t think of everything all the time, so when we stop to reflect, we find that we have forgotten something.
+For some programming tasks, the initial requirements cannot be changed. That’s usually too rigid a policy and leads to programs that are unnecessarily poor solutions to the problems that they are written to solve. So, let’s consider
+7.2	INPUT AND  OUTPUT	223
+
+
+what we would do, assuming that we can change the specification of what exactly the program should do. Do we really want the program to write Expression: and Result:? How would we know? Just “thinking” rarely helps. We have to try and see what works best.
+
+2+3; 5*7; 2+9;
+
+currently gives
+
+= 5 = 35 = 11
+
+If we used Expression: and Result:, we’d get
+
+Expression: 2+3; 5*7; 2+9; Result : 5
+Expression: Result: 35 Expression: Result: 11 Expression:
+
+We are sure that some people will like one style and others will like the other. In such cases, we can consider giving people a choice, but for this simple calculator that would be overkill, so we must decide. We think that writing Expression: and Result: is a bit too “heavy” and distracting. Using those, the actual expressions and results are only a minor part of what appears on the screen, and since expres-sions and results are what matters, nothing should distract from them. On the other hand, unless we somehow separate what the user types from what the com-puter outputs, the result can be confusing. During initial debugging, we added = as a result indicator. We would also like a short “prompt” to indicate that the program wants input. The > character is often used as a prompt:
+
+> 2+3; = 5
+> 5*7; = 35
+>
+
+This looks much better, and we can get it by a minor change to the main loop of main():
+
+double val = 0; while (cin) {
+cout << "> " ;	// print prompt Token t = ts.get();
+224	CHAPTER  7   •   COMPLETING A  PROGRAM
+
+
+if (t.kind == 'q') break; if (t.kind == ';')
+cout << "= " << val << '\n';	// print result else
+ts.putback(t); val = expression();
+}
+
+Unfortunately, the result of putting several expressions on a line is still messy:
+
+> 2+3; 5*7; 2+9; = 5
+> = 35 > = 11 >
+
+The basic problem is that we didn’t think of multiple expressions on a line when we started out (at least we pretended not to). What we want is
+
+> 2+3; 5*7; 2+9; = 5
+= 35 = 11 >
+
+This looks right, but unfortunately there is no really obvious way of achieving it. We first looked at main(). Is there a way to write out > only if it is not immediately followed by a =? We cannot know! We need to write > before the get(), but we do not know if get() actually reads new characters or simply gives us a Token from characters that it had already read from the keyboard. In other words, we would have to mess with Token_stream to make this final improvement.
+For now, we decide that what we have is good enough. If we find that we have to modify Token_stream, we’ll revisit this decision. However, it is unwise to make major structural changes to gain a minor advantage, and we haven’t yet thoroughly tested the calculator.
+
+
+7.3  Error handling
+
+The first thing to do once you have a program that “basically works” is to try to break it; that is, we try to feed it input in the hope of getting it to misbehave. We say “hope” because the challenge here is to find as many errors as possible, so
+7.3	ERROR  HANDLING	225
+
+
+that you can fix them before anybody else finds them. If you go into this exercise with the attitude that “my program works and I don’t make errors!” you won’t find many bugs and you’ll feel bad when you do find one. You’d be playing head games with yourself! The right attitude when testing is “I’ll break it! I’m smarter than any program — even my own!” So, we feed the calculator a mix of correct and incorrect expressions. For example:
+
+1+2+3+4+5+6+7+8 1–2–3–4
+!+2 ;;; (1+3; (1+);
+1*2/3%4+5–6; ();
+1+; +1 1++; 1/0 1/0; 1++2; –2;
+–2;;;; 1234567890123456; 'a';
+q 1+q
+1+2; q
+
+
+TRY THIS
+
+Feed a few such “problematic” expressions to the calculator and try to fig-ure out in how many ways you can get it to misbehave. Can you get it to crash, that is, to get it past our error handling and give a machine error? We don’t think you can. Can you get it to exit without a useful error message? You can.
+
+
+Technically, this is known as testing. There are people who do this — break pro-grams — for a living. Testing is a very important part of software development and can actually be fun. Chapter 26 examines testing in some detail. One big question
+226	CHAPTER  7   •   COMPLETING A  PROGRAM
+
+
+is: “Can we test the program systematically, so that we find all of the errors?” There is no general answer to this question; that is, there is no answer that holds for all programs. However, you can do rather well for many programs when you approach testing seriously. You try to create test cases systematically, and just in case your strategy for selecting tests isn’t complete, you do some “unreasonable” tests, such as
+
+Mary had a little lamb
+srtvrqtiewcbet7rewaewre–wqcntrretewru754389652743nvcqnwq; !@#$%^&*()~:;
+
+Once, when testing compilers, I got into the habit of feeding email that reported compiler errors straight to the compiler — mail headers, user’s explanation, and all. That wasn’t “sensible” because “nobody would do that.” However, a program ideally catches all errors, not just the sensible ones, and soon that compiler was very resilient against “strange input.”
+The first really annoying thing we noticed when testing the calculator was that the window closed immediately after inputs such as
+
++1; () !+2
+
+A little thought (or some tracing of the program’s execution) shows that the prob-lem is that the window is closed immediately after the error message has been written. This happens because our mechanism for keeping a window alive was to wait for you to enter a character. However, in all three cases above, the program detected an error before it had read all of the characters, so that there was a char-acter left on the input line. The program can’t tell such “leftover” characters from a character entered in response to the Enter a character to close window prompt. That “leftover” character then closed the window.
+We could deal with that by modifying main() (see §5.6.3):
+
+catch (runtime_error& e) { cerr << e.what() << '\n'; // keep_window_open():
+cout << "Please enter the character ~ to close the window\n"; for (char ch; cin >> ch; )	// keep reading until we find a ~
+if (ch=='~') return 1; return 1;
+}
+7.3	ERROR  HANDLING	227
+
+
+Basically, we replaced keep_window_open() with our own code. Note that we still have our problem if a ~ happens to be a character to be read after an error, but that’s rather unlikely.
+When we encountered this problem we wrote a version of keep_window_ open() that takes a string as its argument and closes the window only when you enter that string after getting the prompt, so a simpler solution is
+
+catch (runtime_error& e) { cerr << e.what() << '\n';
+keep_window_open("~~"); return 1;
+}
+
+Now examples such as
+
++1 !1~~ ()
+
+will cause the calculator to give the proper error messages, then say
+
+Please enter ~~ to exit
+
+and not exit until you enter the string ~~.
+The calculator takes input from the keyboard. That makes testing tedious: each time we make an improvement, we have to type in a lot of test cases (yet again!) to make sure we haven’t broken anything. It would be much better if we could store our test cases somewhere and run them with a single command. Some operating systems (notably Unix) make it trivial to get cin to read from a file with-out modifying the program, and similarly to divert the output from cout to a file. If that’s not convenient, we must modify the program to use a file (see Chapter 10).
+Now consider:
+
+1+2; q
+
+and
+
+1+2 q
+
+We would like both to print the result (3) and then exit the program. Curiously enough,
+
+1+2 q
+228	CHAPTER  7   •   COMPLETING A  PROGRAM
+
+
+does that, but the apparently cleaner
+
+1+2; q
+
+elicits a Primary expected error. Where would we look for this error? In main() where ; and q are handled, of course. We added those “print” and “quit” com-mands rather quickly to get the calculator to work (§6.7). Now we are paying for that haste. Consider again:
+
+double val = 0; while (cin) {
+cout << "> "; Token t = ts.get();
+if (t.kind == 'q') break; if (t.kind == ';')
+cout << "= " << val << '\n'; else
+ts.putback(t); val = expression();
+}
+
+If we find a semicolon, we straightaway proceed to call expression()  without checking for q. The first thing that expression() does is to call term(), which first calls primary(), which finds q. The letter q isn’t a Primary so we get our error message. So, we should test for q after testing for a semicolon. While we were at it, we felt the need to simplify the logic a bit, so the complete main() reads
+
+int main() try
+{
+while (cin) {
+cout << "> "; Token t = ts.get();
+while (t.kind == ';') t=ts.get();	// eat ‘;’ if (t.kind == 'q') {
+keep_window_open(); return 0;
+} ts.putback(t);
+cout << "= " << expression() << '\n'; }
+keep_window_open(); return 0;
+}
+7.4	NEGATIVE  NUMBERS	229
+
+
+catch (exception& e) {
+cerr << e.what() << '\n'; keep_window_open("~~"); return 1;
+}
+catch (...) {
+cerr << "exception \n"; keep_window_open("~~"); return 2;
+}
+
+This makes for reasonably robust error handling. So we can start considering what else we can do to improve the calculator.
+
+
+7.4  Negative numbers
+
+If you tested the calculator, you found that it couldn’t handle negative numbers elegantly. For example, this is an error:
+
+–1/2
+
+We have to write
+
+(0–1)/2
+
+That’s not acceptable.
+Finding such problems during late debugging and testing is common. Only now do we have the opportunity to see what our design really does and get the feedback that allows us to refine our ideas. When planning a project, it is wise to try to preserve time and flexibility to benefit from the lessons we learn here. All too often, “release 1.0” is shipped without needed refinements because a tight schedule or a rigid project management strategy prevents “late” changes to the specification; “late” addition of “features” is especially dreaded. In reality, when a program is good enough for simple use by its designers but not yet ready to ship, it isn’t “late” in the development sequence; it’s the earliest time when we can benefit from solid experience with the program. A realistic schedule takes that into account.
+In this case, we basically need to modify the grammar to allow unary minus. The simplest change seems to be in Primary. We have
+
+Primary: Number
+"(" Expression ")"
+230	CHAPTER  7   •   COMPLETING A  PROGRAM
+
+
+and we need something like
+
+Primary: Number
+"(" Expression ")" "–" Primary
+"+" Primary
+
+We added unary plus because that’s what C++ does. When we have unary mi-nus, someone always tries unary plus and it’s easier just to implement that than to explain why it is useless. The code that implements Primary becomes
+
+double primary() {
+Token t = ts.get(); switch (t.kind) {
+case '(':	// handle ‘(’ expression ‘)’ {
+double d = expression(); t = ts.get();
+if (t.kind != ')') error("')' expected"); return d;
+}
+case '8':	// we use ‘8’ to represent a number return t.value;	// return the number’s value
+case '–':
+return – primary(); case '+':
+return primary(); default:
+error("primary expected"); }
+}
+
+That’s so simple that it actually worked the first time.
+
+
+7.5  Remainder: %
+
+When we first analyzed the ideals for a calculator, we wanted the remainder (modulo) operator: %. However, % is not defined for floating-point numbers, so we backed off. Now we can consider it again. It should be simple:
+1.  We add % as a Token.
+2.  We define a meaning for %.
+7.5	REMAINDER:  %	231
+
+
+We know the meaning of % for integer operands. For example:
+
+> 2%3; = 2
+> 3%2; = 1
+> 5%3; = 2
+
+But how should we handle operands that are not integers? Consider:
+
+> 6.7%3.3;
+
+What should be the resulting value? There is no perfect technical answer. How-ever, modulo is often defined for floating-point operands. In particular, x%y can be defined as x%y==x–y*int(x/y), so that 6.7%3.3==6.7–3.3*int(6.7/3.3), that is, 0.1. This is easily done using the standard library function fmod() (floating-point mod-ulo) from <cmath> (§24.8). We modify term() to include
+
+case '%':
+{	double d = primary();
+if (d == 0) error("%:divide by zero"); left = fmod(left,d);
+t = ts.get(); break;
+}
+
+The <cmath> library is where we find all of the standard mathematical functions, such as sqrt(x) (square root of x), abs(x) (absolute value of x), log(x) (natural log-arithm of x), and pow(x,e) (x to the power of e).
+Alternatively, we can prohibit the use of % on a floating-point argument. We check if the floating-point operands have fractional parts and give an error mes-sage if they do. The problem of ensuring int operands for % is a variant of the narrowing problem (§3.9.2 and §5.6.4), so we could solve it using narrow_cast:
+
+case '%':
+{	int i1 = narrow_cast<int>(left);
+int i2 = narrow_cast<int>(primary()); if (i2 == 0) error("%: divide by zero"); left = i1%i2;
+t = ts.get(); break;
+}
+
+For a simple calculator, either solution will do.
+232	CHAPTER  7   •   COMPLETING A  PROGRAM
+
+
+7.6  Cleaning up the code
+
+We have made several changes to the code. They are, we think, all improvements, but the code is beginning to look a bit messy. Now is a good time to review the code to see if we can make it clearer and shorter, add and improve comments, etc. In other words, we are not finished with the program until we have it in a state suitable for someone else to take over maintenance. Except for the almost total absence of comments, the calculator code really isn’t that bad, but let’s do a bit of cleanup.
+
+7.6.1  Symbolic constants
+Looking back, we find the use of '8' to indicate a Token containing a numeric value odd. It doesn’t really matter what value is used to indicate a number Token as long as the value is distinct from all other values indicating different kinds of Tokens. However, the code looks a bit odd and we had to keep reminding our-selves in comments:
+
+case '8':	// we use '8' to represent a number return t.value;	// return the number’s value
+case '–':
+return – primary();
+
+To be honest, we also made a few mistakes, typing '0' rather than '8', because we forgot which value we had chosen to use. In other words, using '8' directly in the code manipulating Tokens was sloppy, hard to remember, and error-prone; '8' is one of those “magic constants” we warned against in §4.3.1. What we should have done was to introduce a symbolic name for the constant we used to repre-sent a number:
+
+const char number = '8';	// t.kind==number means that t is a number Token
+
+The const modifier simply tells the compiler that we are defining an object that is not supposed to change: for example, an assignment number='0' would cause the compiler to give an error message. Given that definition of number, we don’t have to use '8' explicitly anymore. The code fragment from primary above now becomes
+
+case number:
+return t.value;	// return the number’s value case '–':
+return – primary();
+
+This requires no comment. We should not say in comments what can be clearly and directly said in code. Repeated comments explaining something are often an indication that the code should be improved.
+7.6	CLEANING  UP THE  CODE	233
+
+
+Similarly, the code in Token_stream::get() that recognizes numbers becomes
+
+case '.':
+case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
+{    cin.putback(ch);	// put digit back into the input stream double val;
+cin >> val;	// read a floating-point number return Token{number,val};
+}
+
+We could consider symbolic names for all tokens, but that seems overkill. After all, '(' and '+' are about as obvious a notation for ( and + as anyone could come up with. Looking through the tokens, only ';' for “print” (or “terminate expression”) and 'q' for “quit” seem arbitrary. Why not 'p' and 'e'? In a larger program, it is only a matter of time before such obscure and arbitrary notation becomes a cause of a problem, so we introduce
+
+
+const char quit = 'q'; const char print = ';';
+
+// t.kind==quit means that t is a quit Token // t.kind==print means that t is a print Token
+
+
+Now we can write main()’s loop like this:
+
+while (cin) {
+cout << "> "; Token t = ts.get();
+while (t.kind == print) t=ts.get(); if (t.kind == quit) {
+keep_window_open(); return 0;
+} ts.putback(t);
+cout << "= " << expression() << '\n'; }
+
+Introducing symbolic names for “print”and “quit” makes the code easier to read. In addition, it doesn’t encourage someone reading main() to make assumptions about how “print” and “quit” are represented on input. For example, it should come as no surprise if we decide to change the representation of “quit” to 'e' (for “exit”). That would now require no change in main().
+Now the strings "> " and "= " stand out. Why do we have these “magical” literals in the code? How would a new programmer reading main() guess their
+234	CHAPTER  7   •   COMPLETING A  PROGRAM
+
+
+purpose? Maybe we should add a comment? Adding a comment might be a good idea, but introducing a symbolic name is more effective:
+
+const string prompt = "> ";
+const string result = "= ";	// used to indicate that what follows is a result
+
+Should we want to change the prompt or the result indicator, we can just modify those consts. The loop now reads
+
+while (cin) {
+cout << prompt; Token t = ts.get();
+while (t.kind ==print) t=ts.get(); if (t.kind == quit) {
+keep_window_open(); return 0;
+} ts.putback(t);
+cout << result << expression() << '\n'; }
+
+7.6.2  Use of functions
+The functions we use should reflect the structure of our program, and the names
+of the functions should identify the logically separate parts of our code. Basically, our program so far is rather good in this respect: expression(), term(), and pri-mary() directly reflect our understanding of the expression grammar, and get() handles the input and token recognition. Looking at main(), though, we notice that it does two logically separate things:
+1.  main()  provides general “scaffolding”: start the program, end the pro-gram, and handle “fatal” errors.
+2.  main() handles the calculation loop.
+
+Ideally, a function performs a single logical action (§4.5.1). Having main() per-form both of these actions obscures the structure of the program. The obvious solution is to make the calculation loop into a separate function calculate():
+
+void calculate()	// expression evaluation loop {
+while (cin) {
+cout << prompt; Token t = ts.get();
+while (t.kind == print) t=ts.get();	// first discard all “prints”
+7.6	CLEANING  UP THE  CODE	235
+
+
+if (t.kind == quit) return; ts.putback(t);
+cout << result << expression() << '\n'; }
+}
+
+int main() try {
+calculate();
+keep_window_open();	// cope with Windows console mode return 0;
+}
+catch (runtime_error& e) { cerr << e.what() << '\n';
+keep_window_open("~~"); return 1;
+}
+catch (. . .) {
+cerr << "exception \n"; keep_window_open("~~"); return 2;
+}
+
+This reflects the structure much more directly and is therefore easier to understand.
+
+7.6.3  Code layout
+Looking through the code for ugly code, we find
+
+switch (ch) {
+case 'q': case ';': case '%': case '(': case ')': case '+': case'–': case '*': case '/': return Token{ch};	// let each character represent itself
+
+This wasn’t too bad before we added 'q', ';', and '%', but now it’s beginning to become obscure. Code that is hard to read is where bugs can more easily hide. And yes, a potential bug lurks here! Using one line per case and adding a couple of comments help. So, Token_stream’s get() becomes
+
+Token Token_stream::get()
+// read characters from cin and compose a Token {
+if (full) {	// check if we already have a Token ready full = false;
+return buffer; }
+236	CHAPTER  7   •   COMPLETING A  PROGRAM
+
+
+char ch;
+cin >> ch;	// note that >> skips whitespace (space, newline, tab, etc.)
+
+switch (ch) { case quit: case print: case '(': case ')': case '+': case '–': case '*': case '/': case '%':
+return Token{ch};	// let each character represent itself
+case '.':	// a floating-point-literal can start with a dot case '0': case '1': case '2': case '3': case '4':
+case '5': case '6': case '7': case '8': case '9':	// numeric literal {    cin.putback(ch);	// put digit back into the input stream
+double val;
+cin >> val;	// read a floating-point number return Token{number,val};
+} default:
+error("Bad token"); }
+}
+
+We could of course have put each digit case on a separate line also, but that didn’t seem to buy us any clarity. Also, doing so would prevent get() from being viewed in its entirety on a screen at once. Our ideal is for each function to fit on the screen; one obvious place for a bug to hide is in the code that we can’t see because it’s off the screen horizontally or vertically. Code layout matters.
+Note also that we changed the plain 'q' to the symbolic name quit. This im-proves readability and also guarantees a compile-time error if we should make the mistake of choosing a value for quit that clashes with another token name.
+When we clean up code, we might accidentally introduce errors. Always re-test the program after cleanup. Better still, do a bit of testing after each set of minor improvements so that if something went wrong you can still remember exactly what you did. Remember: Test early and often.
+7.6	CLEANING  UP THE  CODE	237
+
+
+7.6.4  Commenting
+We added a few comments as we went along. Good comments are an important part of writing code. We tend to forget about comments in the heat of program-ming. When you go back to the code to clean it up is an excellent time to look at each part of the program to see if the comments you originally wrote are
+
+1.  Still valid (you might have changed the code since you wrote the comment) 2.  Adequate for a reader (they usually are not)
+3.  Not so verbose that they distract from the code
+
+To emphasize that last concern: what is best said in code should be said in code. Avoid comments that explain something that’s perfectly clear to someone who knows the programming language. For example:
+
+x = b+c;	// add b and c and assign the result to x
+
+You’ll find such comments in this book, but only when we are trying to explain the use of a language feature that might not yet be familiar to you.
+Comments are for things that code expresses poorly. An example is intent: code says what it does, not what it was intended to do (§5.9.1). Look at the cal-culator code. There is something missing: the functions show how we process expressions and tokens, but there is no indication (except the code) of what we meant expressions and tokens to be. The grammar is a good candidate for some-thing to put in comments or into some documentation of the calculator.
+
+/*
+Simple calculator
+
+Revision history:
+
+Revised by Bjarne Stroustrup November 2013 Revised by Bjarne Stroustrup May 2007 Revised by Bjarne Stroustrup August 2006 Revised by Bjarne Stroustrup August 2004 Originally written by Bjarne Stroustrup
+(bs@cs.tamu.edu) Spring 2004.
+
+This program implements a basic expression calculator. Input from cin; output to cout.
+The grammar for input is:
+238	CHAPTER  7   •   COMPLETING A  PROGRAM
+
+
+Statement: Expression Print
+Quit
+
+Print: ;
+
+Quit:
+q
+
+Expression: Term
+Expression + Term Expression – Term
+Term: Primary
+Term * Primary Term / Primary Term % Primary
+Primary: Number
+( Expression ) – Primary
++ Primary Number:
+floating-point-literal
+
+
+Input comes from cin through the Token_stream called ts. */
+
+Here we used the block comment, which starts with a /* and continues until a */. In a real program, the revision history would contain indications of what correc-tions and improvements were made.
+Note that the comments are not the code. In fact, this grammar simplifies a bit: compare the rule for Statement with what really happens (e.g., have a peek at the code in the following section). The comment fails to explain the loop in calculate() that allows us to do several calculations in a single run of the program. We’ll return to that problem in §7.8.1.
+7.7	RECOVERING  FROM  ERRORS	239
+
+
+7.7  Recovering from errors
+
+Why do we exit when we find an error? That seemed simple and obvious at the time, but why? Couldn’t we just write an error message and carry on? After all, we often make little typing errors and such an error doesn’t mean that we have decided not to do a calculation. So let’s try to recover from an error. That basically means that we have to catch exceptions and continue after we have cleaned up any messes that were left behind.
+Until now, all errors have been represented as exceptions and handled by main(). If we want to recover from errors, calculate() must catch exceptions and try to clean up the mess before trying to evaluate the next expression:
+
+void calculate() {
+while (cin) try {
+cout << prompt; Token t = ts.get();
+while (t.kind == print) t=ts.get();	// first discard all “prints” if (t.kind == quit) return;
+ts.putback(t);
+cout << result << expression() << '\n'; }
+catch (exception& e) {
+cerr << e.what() << '\n';	// write error message clean_up_mess();
+} }
+
+We simply made the while-loop’s block into a try-block that writes an error mes-sage and cleans up the mess. Once that’s done, we carry on as always.
+What would “clean up the mess” entail? Basically, getting ready to compute again after an error has been handled means making sure that all our data is in a good and predictable state. In the calculator, the only data we keep outside an individual function is the Token_stream. So what we need to do is to ensure that we don’t have tokens related to the aborted calculation sitting around to confuse the next calculation. For example,
+
+1**2*3; 4+5;
+240	Chapter  7   •   COMpLetING a  prOGraM
+
+
+will cause an error, and 2*3; 4+5 will be left in the Token_stream’s and cin’s buf-fers after the second * has triggered an exception. We have two choices:
+
+1.  Purge all tokens from the Token_stream.
+2.  Purge all tokens from the current calculation from the Token_stream.
+
+The first choice discards all (including 4+5;), whereas the second choice just dis-cards 2*3;, leaving 4+5 to be evaluated. Either could be a reasonable choice and either could surprise a user. As it happens, both are about equally simple to imple-ment. We chose the second alternative because it simplifies testing.
+So we need to read input until we find a semicolon. This seems simple. We have get() to do our reading for us so we can write a clean_up_mess() like this:
+
+void clean_up_mess()	// naive {
+while (true) {	// skip until we find a print Token t = ts.get();
+if (t.kind == print) return; }
+}
+
+Unfortunately, that doesn’t work all that well. Why not? Consider this input:
+
+1@z; 1+3;
+
+The @ gets us into the catch-clause for the while-loop. Then, we call clean_up_ mess() to find the next semicolon. Then, clean_up_mess() calls get() and reads the z. That gives another error (because z is not a token) and we find ourselves in main()’s catch(…) handler, and the program exits. Oops! We don’t get a chance to evaluate 1+3. Back to the drawing board!
+We could try more elaborate trys and catches, but basically we are heading into an even bigger mess. Errors are hard to handle, and errors during error han-dling are even worse than other errors. So, let’s try to devise some way to flush characters out of a Token_stream that couldn’t possibly throw an exception. The only way of getting input into our calculator is get(), and that can — as we just discovered the hard way — throw an exception. So we need a new operation. The obvious place to put that is in Token_stream:
+
+
+class Token_stream { public:
+Token get();
+void putback(Token t); void ignore(char c);
+
+
+
+// get a Token
+// put a Token back
+// discard characters up to and including a c
+7.7	RECOVERING  FROM  ERRORS	241
+
+
+
+private:
+bool full {false}; Token buffer;
+
+};
+
+
+// is there a Token in the buffer?
+// here is where we keep a Token put back using // putback()
+
+
+This ignore() function needs to be a member of Token_stream because it needs to look at Token_stream’s buffer. We chose to make “the thing to look for” an argument to ignore() — after all, the Token_stream doesn’t have to know what the calculator considers a good character to use for error recovery. We decided that argument should be a character because we don’t want to risk composing Tokens — we saw what happened when we tried that. So we get
+
+void Token_stream::ignore(char c) // c represents the kind of Token
+{
+// first look in buffer:
+if (full && c==buffer.kind) { full = false;
+return; }
+full = false;
+
+// now search input: char ch = 0;
+while (cin>>ch)
+if (ch==c) return; }
+
+This code first looks at the buffer. If there is a c there, we are finished after dis-carding that c; otherwise, we need to read characters from cin until we find a c.
+We can now write clean_up_mess() rather simply:
+
+void clean_up_mess() {
+ts.ignore(print); }
+
+Dealing with errors is always tricky. It requires much experimentation and testing because it is extremely hard to imagine what errors can occur. Trying to make a program foolproof is always a very technical activity; amateurs typically don’t care. Quality error handling is one mark of a professional.
+242	CHAPTER  7   •   COMPLETING A  PROGRAM
+
+
+7.8 Variables
+
+Having worked on style and error handling, we can return to looking for im-provements in the calculator functionality. We now have a program that works quite well; how can we improve it? The first wish list for the calculator included variables. Having variables gives us better ways of expressing longer calculations. Similarly, for scientific calculations, we’d like built-in named values, such as pi and e, just as we have on scientific calculators.
+Adding variables and constants is a major extension to the calculator. It will touch most parts of the code. This is the kind of extension that we should not embark on without good reason and sufficient time. Here, we add variables and constants because it gives us a chance to look over the code again and try out some more programming techniques.
+
+7.8.1 Variables and deﬁnitions
+Obviously, the key to both variables and built-in constants is for the calculator
+program to keep (name,value) pairs so that we can access the value given the name. We can define a Variable like this:
+
+class Variable { public:
+string name; double value;
+};
+
+We will use the name member to identify a Variable and the value member to store the value corresponding to that name.
+How can we store Variables so that we can search for a Variable with a given name string to find its value or to give it a new value? Looking back over the programming tools we have encountered so far, we find only one good answer: a vector of Variables:
+
+vector<Variable> var_table;
+
+We can put as many Variables as we like into the vector var_table and search for a given name by looking at the vector elements one after another. We can write a get_value() function that looks for a given name string and returns its corre-sponding value:
+
+double get_value(string s)
+// return the value of the Variable named s {
+7.8	VARIABLES	243
+
+
+for (const Variable& v : var_table)
+if (v.name == s) return v.value; error("get: undefined variable ", s);
+}
+
+The code really is quite simple: go through every Variable in var_table (starting with the first element and continuing until the last) and see if its name matches the argument string s. If that is the case, return its value.
+Similarly, we can define a set_value() function to give a Variable a new value:
+
+void set_value(string s, double d) // set the Variable named s to d
+{
+for (Variable& v : var_table) if (v.name == s) {
+v.value = d; return;
+}
+error("set: undefined variable ", s); }
+
+We can now read and write “variables” represented as Variables in var_table. How do we get a new Variable into var_table? What does a user of our calculator have to write to define a new variable and later to get its value? We could consider C++’s notation
+
+double var = 7.2;
+
+That would work, but all variables in this calculator hold double values, so saying “double” would be redundant. Could we make do with
+
+var = 7.2;
+
+Possibly, but then we would be unable to tell the difference between the declara-tion of a new variable and a spelling mistake:
+
+
+var1 = 7.2; var1 = 3.2;
+
+// define a new variable called var1 // define a new variable called var2
+
+
+Oops! Clearly, we meant var2 = 3.2; but we didn’t say so (except in the comment). We could live with this, but we’ll follow the tradition in languages, such as C++, that distinguish declarations (with initializations) from assignments. We could use double, but for a calculator we’d like something short, so — drawing on another old tradition — we choose the keyword let:
+
+let var = 7.2;
+244	CHAPTER  7   •   COMPLETING A  PROGRAM
+
+
+The grammar would be
+
+Calculation: Statement Print
+Quit
+Calculation Statement
+
+Statement: Declaration Expression
+
+Declaration:
+"let" Name "=" Expression
+
+Calculation is the new top production (rule) of the grammar.It expresses the loop (in calculate()) that allows us to do several calculations in a run of the calculator program.It relies on the Statement production to handle expressions and declara-tions. We can handle a statement like this:
+
+double statement() {
+Token t = ts.get(); switch (t.kind) { case let:
+return declaration(); default:
+ts.putback(t); return expression();
+} }
+
+We can now use statement() instead of expression() in calculate():
+
+
+void calculate() {
+while (cin) try {
+cout << prompt; Token t = ts.get();
+while (t.kind == print) t=ts.get(); if (t.kind == quit) return;
+
+
+
+
+
+
+
+// first discard all “prints” // quit
+7.8	VARIABLES	245
+
+
+ts.putback(t);
+cout << result << statement() << '\n'; }
+catch (exception& e) {
+cerr << e.what() << '\n';	// write error message clean_up_mess();
+} }
+
+We now have to write declaration(). What should it do? It should make sure that what comes after a let is a Name followed by a = followed by an Expression. That’s what our grammar says. What should it do with the name? We should add a Variable with that name string and the value of the expression to our vec-tor<Variable> called var_table. Once that’s done we can retrieve the value using get_value() and change it using set_value(). However, before writing this, we have to decide what should happen if we define a variable twice. For example:
+
+let v1 = 7; let v1 = 8;
+
+We chose to consider such a redefinition an error. Typically, it is simply a spelling mistake. Instead of what we wrote, we probably meant
+
+let v1 = 7; let v2 = 8;
+
+There are logically two parts to defining a Variable with the name var with the value val:
+
+1.  Check whether there already is a Variable called var in var_table. 2.  Add (var,val) to var_table.
+We have no use for uninitialized variables. We defined the functions is_declared() and define_name() to represent those two logically separate operations:
+
+bool is_declared(string var)
+// is var already in var_table? {
+for (const Variable& v : var_table)
+if (v.name == var) return true; return false;
+}
+246	CHAPTER  7   •   COMPLETING A  PROGRAM
+
+
+double define_name(string var, double val) // add {var,val} to var_table
+{
+if (is_declared(var)) error(var," declared twice"); var_table.push_back(Variable{var,val});
+return val; }
+
+Adding a new Variable to a vector<Variable> is easy; that’s what vector’s push_ back() member function does:
+
+var_table.push_back(Variable{var,val});
+
+The Variable{var,val} makes the appropriate Variable and push_back(), then adds that Variable to the end of var_table. Given that, and assuming that we can handle let and name tokens, declaration() is straightforward to write:
+
+double declaration()
+// assume we have seen "let” // handle: name = expression
+// declare a variable called "name” with the initial value "expression” {
+Token t = ts.get();
+if (t.kind != name) error ("name expected in declaration"); string var_name = t.name;
+
+Token t2 = ts.get();
+if (t2.kind != '=') error("= missing in declaration of ", var_name);
+
+double d = expression(); define_name(var_name,d); return d;
+}
+
+Note that we returned the value stored in the new variable. That’s useful when the initializing expression is nontrivial. For example:
+
+let v = d/(t2–t1);
+
+This declaration will define v  and also print its value. Additionally, printing the value of a declared variable simplifies the code in calculate() because every statement() returns a value. General rules tend to keep code simple, whereas spe-cial cases tend to lead to complications.
+7.8	VARIABLES	247
+
+
+This mechanism for keeping track of Variables is what is often called a sym-bol table and could be radically simplified by the use of a standard library map; see §21.6.1.
+
+7.8.2  Introducing names
+This is all very good, but unfortunately, it doesn’t quite work. By now, that shouldn’t come as a surprise. Our first cut never — well, hardly ever — works.
+Here, we haven’t even finished the program — it doesn’t yet compile. We have no '=' token, but that’s easily handled by adding a case to Token_stream::get() (§7.6.3). But how do we represent let and name as tokens? Obviously, we need to modify get() to recognize these tokens. How? Here is one way:
+
+
+const char name = 'a'; const char let = 'L';
+const string declkey = "let";
+
+// name token
+// declaration token
+// declaration keyword
+
+
+Token Token_stream::get() {
+if (full) {
+full = false; return buffer;
+}
+char ch; cin >> ch;
+switch (ch) {
+// as before default:
+if (isalpha(ch)) { cin.putback(ch); string s;
+cin >> s;
+if (s == declkey) return Token{let};    // declaration keyword return Token{name,s};
+}
+error("Bad token"); }
+}
+
+Note first of all the call isalpha(ch). This call answers the question “Is ch a let-ter?”; isalpha() is part of the standard library that we get from std_lib_facilities.h. For more character classification functions, see §11.6. The logic for recognizing names is the same as that for recognizing numbers: find a first character of the
+248	Chapter  7   •   COMpLetING a  prOGraM
+
+
+right kind (here, a letter), then put it back using putback() and read in the whole name using >>.
+Unfortunately, this doesn’t compile; we have no Token that can hold a string, so the compiler rejects Token{name,s}. To handle that, we must modify the defi-nition of Token to hold either a string or a double, and handle three forms of initializers, such as
+
+•   Just a kind; for example, Token{'*'}
+•   A kind and a number; for example, Token{number,4.321} •   A kind and a name; for example, Token{name,"pi"}
+
+We handle that by introducing three initialization functions, known as construc-tors because they construct objects:
+
+class Token { public:
+char kind; double value; string name;
+Token() : kind{0} {}	// default constructor Token(char ch) :kind{ch} { }	// initialize kind with ch Token(char ch, double val) :kind{ch}, value{val} { }	// initialize kind
+// and value Token(char ch, string n) :kind{ch}, name{n} { }	// initialize kind
+// and name };
+
+Constructors add an important degree of control and flexibility to initialization. We will examine constructors in detail in Chapter 9 (§9.4.2, §9.7).
+We chose 'L' as the representation of the let token and the string let as our key-word. Obviously, it would be trivial to change that keyword to double, var, #, or whatever by changing the string declkey that we compare s to.
+Now we try the program again. If you type this, you’ll see that it all works:
+
+let x = 3.4; let y = 2;
+x + y * 2;
+
+However, this doesn’t work:
+
+let x = 3.4; let y = 2; x+y*2;
+7.8	VARIABLES	249
+
+
+What’s the difference between those two examples? Have a look to see what happens.
+The problem is that we were sloppy with our definition of Name. We even “forgot” to define our Name production in the grammar (§7.8.1). What characters can be part of a name? Letters? Certainly. Digits? Certainly, as long as they are not the starting character. Underscores? Eh? The + character? Well? Eh? Look at the code again. After the initial letter we read into a string using >>. That ac-cepts every character until it sees whitespace. So, for example, x+y*2; is a single name — even the trailing semicolon is read as part of the name. That’s unintended and unacceptable.
+What must we do instead? First we must specify precisely what we want a name to be, and then we must modify get() to do that. Here is a workable spec-ification of a name: a sequence of letters and digits starting with a letter. Given this definition,
+
+a ab a1 Z12
+asdsddsfdfdasfdsa434RTHTD12345dfdsa8fsd888fadsf
+
+are names and
+
+1a as_s # as* a car
+
+are not. Except for leaving out the underscore, this is C++’s rule. We can imple-ment that in the default case of get():
+
+default:
+if (isalpha(ch)) { string s;
+s += ch;
+while (cin.get(ch) && (isalpha(ch) || isdigit(ch))) s+=ch; cin.putback(ch);
+if (s == declkey) return Token{let};    // declaration keyword return Token{name,s};
+}
+error("Bad token");
+250	CHAPTER  7   •   COMPLETING A  PROGRAM
+
+
+Instead of reading directly into the string s, we read characters and put those into s as long as they are letters or digits. The s+=ch statement adds (appends) the character ch to the end of the string s. The curious statement
+
+while (cin.get(ch) && (isalpha(ch) || isdigit(ch))) s+=ch;
+
+reads a character into ch (using cin’s member function get()) and checks if it is a letter or a digit. If so, it adds ch to s and reads again. The get() member function works just like >> except that it doesn’t by default skip whitespace.
+
+7.8.3  Predeﬁ ned names
+Now that we have names, we can easily predefine a few common ones. For exam-
+ple, if we imagine that our calculator will be used for scientific calculations, we’d want pi and e. Where in the code would we define those? In main() before the call of calculate() or in calculate() before the loop. We’ll put them in main() because those definitions really aren’t part of any calculation:
+
+int main() try {
+// predefine names: define_name("pi",3.1415926535); define_name("e",2.7182818284);
+
+calculate();
+
+keep_window_open();	// cope with Windows console mode return 0;
+}
+catch (exception& e) {
+cerr << e.what() << '\n'; keep_window_open("~~"); return 1;
+}
+catch (...) {
+cerr << "exception \n"; keep_window_open("~~"); return 2;
+}
+
+7.8.4 Are we there yet?
+Not really. We have made so many changes that we need to test everything again, clean up the code, and review the comments. Also, we could do more definitions. For example, we “forgot” to provide an assignment operator (see exercise 2), and
+CHAPTER  7  DRILL	251
+
+
+if we have an assignment we might want to distinguish between variables and constants (exercise 3).
+Initially, we backed off from having named variables in our calculator. Look-ing back over the code that implements them, we may have two possible reactions:
+
+1.  Implementing variables wasn’t all that bad; it took only about three dozen lines of code.
+2.  Implementing variables was a major extension. It touched just about ev-ery function and added a completely new concept to the calculator. It increased the size of the calculator by 45% and we haven’t even imple-mented assignment!
+
+In the context of a first program of significant complexity, the second reaction is the correct one. More generally, it’s the right reaction to any suggestion that adds something like 50% to a program in terms of both size and complexity. When that has to be done, it is more like writing a new program based on a previous one than anything else, and it should be treated that way. In particular, if you can build a program in stages as we did with the calculator, and test it at each stage, you are far better off doing so than trying to do the whole program all at once.
+
+
+
+Drill
+
+1.  Starting from the file calculator08buggy.cpp, get the calculator to compile. 2.  Go through the entire program and add appropriate comments.
+3.  As you commented, you found errors (deviously inserted especially for you to find). Fix them; they are not in the text of the book.
+4.  Testing: prepare a set of inputs and use them to test the calculator. Is your list pretty complete? What should you look for? Include negative values, 0, very small, very large, and “silly” inputs.
+5.  Do the testing and fix any bugs that you missed when you commented. 6.  Add a predefined name k meaning 1000.
+7.  Give the user a square root function sqrt(), for example, sqrt(2+6.7). Nat-urally, the value of sqrt(x) is the square root of x; for example, sqrt(9) is 3. Use the standard library sqrt() function that is available through the header std_lib_facilities.h. Remember to update the comments, including the grammar.
+8.  Catch attempts to take the square root of a negative number and print an appropriate error message.
+9.  Allow the user to use pow(x,i) to mean “Multiply x with itself i times”; for example, pow(2.5,3) is 2.5*2.5*2.5. Require i to be an integer using the technique we used for %.
+252	CHAPTER  7   •   COMPLETING A  PROGRAM
+
+
+10.  Change the “declaration keyword” from let to #.
+11.  Change the “quit keyword” from quit to exit. That will involve defining a string for quit just as we did for let in §7.8.2.
+
+Review
+
+1.  What is the purpose of working on the program after the first version works? Give a list of reasons.
+2.  Why does 1+2; q typed into the calculator not quit after it receives an error?
+3.  Why did we choose to make a constant character called number?
+4.  We split main() into two separate functions. What does the new function do and why did we split main()?
+5.  Why do we split code into multiple functions? State principles. 6.  What is the purpose of commenting and how should it be done?
+7.  What does narrow_cast do?
+8.  What is the use of symbolic constants? 9.  Why do we care about code layout?
+10.  How do we handle % (remainder) of floating-point numbers? 11.  What does is_declared() do and how does it work?
+12.  The input representation for let is more than one character. How is it accepted as a single token in the modified code?
+13.  What are the rules for what names can and cannot be in the calculator program?
+14.  Why is it a good idea to build a program incrementally? 15.  When do you start to test?
+16.  When do you retest?
+17.  How do you decide what should be a separate function?
+18.  How do you choose names for variables and functions? List possible reasons.
+19.  Why do you add comments?
+20.  What should be in comments and what should not? 21.  When do we consider a program finished?
+
+
+Terms
+
+code layout commenting error handling
+feature creep
+
+
+
+maintenance recovery
+revision history
+
+
+
+scaffolding symbolic constant
+testing
+CHAPTER  7  EXERCISES	253
+
+
+Exercises
+
+1.  Allow underscores in the calculator’s variable names.
+2.  Provide an assignment operator, =, so that you can change the value of a variable after you introduce it using let. Discuss why that can be useful and how it can be a source of problems.
+3.  Provide named constants that you really can’t change the value of. Hint: You have to add a member to Variable that distinguishes between con-stants and variables and check for it in set_value(). If you want to let the user define constants (rather than just having pi  and e  defined as constants), you’ll have to add a notation to let the user express that, for example, const pi = 3.14;.
+4.  The get_value(), set_value(), is_declared(), and define_name() functions all operate on the variable var_table. Define a class called Symbol_table with a member var_table of type vector<Variable> and member functions get(), set(), is_declared(), and declare(). Rewrite the calculator to use a variable of type Symbol_table.
+5.  Modify Token_stream::get() to return Token(print) when it sees a new-line. This implies looking for whitespace characters and treating newline ('\n') specially. You might find the standard library function isspace(ch), which returns true if ch is a whitespace character, useful.
+6.  Part of what every program should do is to provide some way of helping its user. Have the calculator print out some instructions for how to use the calculator if the user presses the H key (both upper- and lowercase).
+7.  Change the q and h commands to be quit and help, respectively.
+8.  The grammar in §7.6.4 is incomplete (we did warn you against overre-
+liance on comments); it does not define sequences of statements, such as 4+4; 5–6;, and it does not incorporate the grammar changes outlined
+in §7.8. Fix that grammar. Also add whatever you feel is needed to that comment as the first comment of the calculator program and its over-all comment.
+9.  Suggest three improvements (not mentioned in this chapter) to the calcu-lator. Implement one of them.
+10.  Modify the calculator to operate on ints (only); give errors for overflow and underflow. Hint: Use narrow_cast (§7.5).
+11.  Revisit two programs you wrote for the exercises in Chapter 4 or 5. Clean up that code according to the rules outlined in this chapter. See if you find any bugs in the process.
+254	CHAPTER  7   •   COMPLETING A  PROGRAM
+
+
+Postscript
+
+As it happens, we have now seen a simple example of how a compiler works. The calculator analyzes input broken down into toke ns and understood according to a grammar. That’s exactly what a compiler does. After analyzing its input, a com-piler then produces a representation (object code) that we can later execute. The calculator immediately executes the expressions it has analyzed; programs that do this are called interpreters rather than compilers.
