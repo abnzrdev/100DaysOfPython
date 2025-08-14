@@ -1,7 +1,7 @@
 from turtle import Turtle
 
 class Score(Turtle):
-    def __init__(self, x_cor=-50, y_cor=230):
+    def __init__(self, x_cor, y_cor):
         super().__init__()
         self.score = "0"
         self.penup()
