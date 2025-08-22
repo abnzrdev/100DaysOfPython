@@ -4,9 +4,10 @@ class Ball(Turtle):
     def __init__(self):
         super().__init__()
         self.x_move = 10
-        self.y_move = 3
+        self.y_move = 10
+
+    def create_ball(self):
         self.shape("circle")
-        self.speed("slowest")
         self.color("white")
         self.penup()
 

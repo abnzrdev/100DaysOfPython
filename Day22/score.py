@@ -1,11 +1,13 @@
 from turtle import Turtle
 
 class Score(Turtle):
-    def __init__(self, x_cor, y_cor):
+    def __init__(self):
         super().__init__()
         self.score = "0"
-        self.penup()
         self.hideturtle()
+
+    def create_score(self, x_cor, y_cor):
+        self.penup()
         self.goto(x_cor, y_cor)
         self.color("white")
         self.write(self.score, font=("Courier", 30, "normal"))

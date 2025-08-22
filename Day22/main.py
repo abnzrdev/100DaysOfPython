@@ -10,26 +10,33 @@ VERTICAL_LIMIT = (-300, 300)    # (bottom, top)
 
 # Creating the screen of game
 scr = Screen()
-scr.listen()
 scr.bgcolor("black")
 scr.setup((HORIZONTAL_LIMIT[1] - HORIZONTAL_LIMIT[0]), (VERTICAL_LIMIT[1] - VERTICAL_LIMIT[0]))
+scr.listen()
 
-# Game Utilites
+# Game Utilities
 player = Bar()
 computer = Bar()
-player_score = Score(x_cor=-50, y_cor=230)
-computer_score = Score(x_cor=50, y_cor=230)
+player_score = Score()
+computer_score = Score()
 playing_ball = Ball()
 
-# ---- First game state ---- run as soon the program run
-# Draw dashed center line
+# Event listeners
+scr.onkeypress(fun=lambda: player.move_bar_up() if player.ycor() < VERTICAL_LIMIT[1] - 30 else None, key="Up")
+scr.onkeypress(fun=lambda: player.move_bar_down() if player.ycor() > VERTICAL_LIMIT[0] + 30 else None, key="Down")
+scr.onkeypress(fun=lambda: computer.move_bar_up() if computer.ycor() < VERTICAL_LIMIT[1] - 30 else None, key="w")
+scr.onkeypress(fun=lambda: computer.move_bar_down() if computer.ycor() > VERTICAL_LIMIT[0] + 30 else None, key="s")
 
+# ---- First game state ---- run as soon as the program run
 def starting_part():
+
+    # Creating the middle dash
     dash = Turtle()
     dash.speed("fastest")
     dash.hideturtle()
     for y in range(-280, 300, 40):
         dash.penup()
+        dash.pensize(2)
         dash.goto(0, y)
         dash.pendown()
         dash.pencolor("white")
@@ -38,17 +45,20 @@ def starting_part():
         dash.penup()
 
     # Positioning the player
-    player.goto(HORIZONTAL_LIMIT[0] + 20, 0)
-    computer.goto(HORIZONTAL_LIMIT[1] - 20, 0)
-    scr.tracer(0)
-    game_loop()
+    player.create_bar(HORIZONTAL_LIMIT[0] + 20, 0)
+    computer.create_bar(HORIZONTAL_LIMIT[1] - 20, 0)
+
+    # Positioning the score
+    player_score.create_score(x_cor=-70, y_cor=230)
+    computer_score.create_score(x_cor=50, y_cor=230)
+
+    # Positioning the ball
+    playing_ball.create_ball()
 
 # Game Loop -- Middle part -----
 def game_loop():
-    while True:
-        scr.update()
-        time.sleep(0.1)
-
+    while int(player_score.score) > 10 or int(computer_score.score) < 10:
+        # todo: more precise collision detection using the numbers here if possible more readable code
         # Collision Logic with the bar
         def is_collision(ball, bar):
             ball_x, ball_y = ball.xcor(), ball.ycor()
@@ -58,11 +68,11 @@ def game_loop():
             ball_radius = 10  # default ball's radius
 
             return (bar_x - bar_width/2 - ball_radius < ball_x < bar_x + bar_width/2 + ball_radius and
-            bar_y - bar_height/2 - ball_radius < ball_y < bar_y + bar_height/2 + ball_radius)
+                    bar_y - bar_height/2 - ball_radius < ball_y < bar_y + bar_height/2 + ball_radius)
 
         # Relapse the game
         def relapse_game():
-            playing_ball.goto(0,0)
+            playing_ball.goto(0, 0)
 
         # Colliding with the bar
         if is_collision(playing_ball, player) or is_collision(playing_ball, computer):
@@ -74,6 +84,7 @@ def game_loop():
             print("Colliding with the vertical bar")
             playing_ball.bounce_y()
 
+        # todo: score alignment must be symmetrical
         # Score Increment
         if playing_ball.xcor() > HORIZONTAL_LIMIT[1]:
             player_score.increase_score()
@@ -82,16 +93,10 @@ def game_loop():
             computer_score.increase_score()
             relapse_game()
 
-        # Making the bar to be fixed in the screen
-        scr.onkeypress(fun=lambda: player.move_bar_up() if player.ycor() < VERTICAL_LIMIT[1] - 40 else None, key="Up")
-        scr.onkeypress(fun=lambda: player.move_bar_down() if player.ycor() > VERTICAL_LIMIT[0] + 40 else None, key="Down")
-        scr.onkeypress(fun=lambda: computer.move_bar_up() if computer.ycor() < VERTICAL_LIMIT[1] - 40 else None, key="w")
-        scr.onkeypress(fun=lambda: computer.move_bar_down() if computer.ycor() > VERTICAL_LIMIT[0] + 40 else None, key="s")
-
         playing_ball.move()
 
-if __name__ == "__main__": # do not run when imported it will run when executed
-    starting_part()
+# do not run when imported it will run when executed
+starting_part()
+game_loop()
 
 scr.exitonclick()
-
