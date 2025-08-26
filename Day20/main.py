@@ -1,36 +1,63 @@
-from turtle import Turtle, Screen
+from turtle import Screen
+from snake import Snake
+from food import Food
+from score import Score
+from constants import *
+import time
 
-# Creating the turtle screen and the object
+# Setting up scree
 scr = Screen()
-scr.setup(width=600, height=600)
-scr.title("Snake Game")
-scr.bgcolor("black")
+scr.setup(WIDTH, HEIGHT)
+scr.bgcolor("black")              #to make the game utilities visible
+scr.tracer(0)
+
+# Defining Instances
+snk = Snake()
+food = Food()
+score = Score()
+
+# Tweaking Instances
 scr.listen()
 
-# define the movement
-def move():
-    head.forward(10)
+## Defining Event listeners
+scr.onkeypress(lambda : snk.change_direction(direction="up") , key="Up")
+scr.onkeypress(lambda : snk.change_direction(direction="down") , key="Down")
+scr.onkeypress(lambda : snk.change_direction(direction="right") , key="Right")
+scr.onkeypress(lambda : snk.change_direction(direction="left"), key="Left")
 
-# Defining what will happen when the key presses
-scr.onkeypress(fun=move, key="Right")
+# Game Condition checkers
+def check_collision():
+    if snk.head.xcor() + (SNAKE_HEAD_WIDTH / 2) >= HALF_WIDTH or snk.head.xcor() - (SNAKE_HEAD_WIDTH / 2) <= HALF_NEG_WIDTH:
+        return True
+    if snk.head.ycor() + (SNAKE_HEAD_WIDTH / 2) >= HALF_HEIGHT or snk.head.ycor() - (SNAKE_HEAD_WIDTH / 2) <= HALF_NEG_HEIGHT:
+        return True
 
-# Creating the segments(head, middle, tail)
-segments = []
-for i in range(3):
-    segment = Turtle()
-    segment.shape("square")
-    segment.color("white")
-    segment.penup()
-    segment.goto(x=-20 * i, y=0)
-    segments.append(segment)
+    snk.head.pos = (snk.head.xcor(), snk.head.ycor())
+    snk.body_positions = [(segment.xcor(), segment.ycor()) for segment in snk.segments[1:]]
+    if snk.head.pos in snk.body_positions:
+        return True
 
-head = segments[0]  # the first segment to be controlled by the player
-
+    return False
+# Main Game loop
 while True:
+
+    # Conditions of the game
+    if snk.head.distance(food) < 20:
+        food.spawn(WIDTH, HEIGHT)
+        snk.grow_snake()
+        score.increase_score()
+
+    if check_collision():
+        snk.collision_action()
+        score.relapse()
+
+    snk.move()
     scr.update()
-    for i in range(3,2,-1):
-        segments[i].goto(segments[i - 1].xcor(), segments[i - 1].ycor())
-
-
-
+    time.sleep(0.09)
+    print(f"snake head position is {snk.head.pos}")
 scr.exitonclick()
+
+
+
+
+# Start building the calculator after finishing this start by implementing this.
