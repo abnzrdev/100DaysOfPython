@@ -56,8 +56,3 @@ while True:
     time.sleep(0.09)
     print(f"snake head position is {snk.head.pos}")
 scr.exitonclick()
-
-
-
-
-# Start building the calculator after finishing this start by implementing this.
