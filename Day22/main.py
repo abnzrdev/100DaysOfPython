@@ -2,7 +2,6 @@ from turtle import Screen, Turtle
 from bar import Bar
 from ball import Ball
 from score import Score
-import time
 
 # Defining the screen boundaries as tuples
 HORIZONTAL_LIMIT = (-300, 300)  # (left, right)
@@ -55,25 +54,26 @@ def starting_part():
     # Positioning the ball
     playing_ball.create_ball()
 
+# Relapse the game
+def relapse_game():
+    playing_ball.hideturtle()
+    playing_ball.goto(0, 0)
+    playing_ball.showturtle()
+
+# Collision Logic with the bar
+def is_collision(ball, bar):
+    ball_x, ball_y = ball.xcor(), ball.ycor()
+    bar_x, bar_y = bar.xcor(), bar.ycor()
+    bar_width = 20  # adjusted width of the bar
+    bar_height = 60 # adjusted height of the bar
+    ball_radius = 10  # default ball's radius
+
+    return (bar_x - bar_width/2 - ball_radius < ball_x < bar_x + bar_width/2 + ball_radius and
+            bar_y - bar_height/2 - ball_radius < ball_y < bar_y + bar_height/2 + ball_radius)
+
 # Game Loop -- Middle part -----
-def game_loop():
-    while int(player_score.score) > 10 or int(computer_score.score) < 10:
-        # todo: more precise collision detection using the numbers here if possible more readable code
-        # Collision Logic with the bar
-        def is_collision(ball, bar):
-            ball_x, ball_y = ball.xcor(), ball.ycor()
-            bar_x, bar_y = bar.xcor(), bar.ycor()
-            bar_width = 20  # adjusted width of the bar
-            bar_height = 60 # adjusted height of the bar
-            ball_radius = 10  # default ball's radius
-
-            return (bar_x - bar_width/2 - ball_radius < ball_x < bar_x + bar_width/2 + ball_radius and
-                    bar_y - bar_height/2 - ball_radius < ball_y < bar_y + bar_height/2 + ball_radius)
-
-        # Relapse the game
-        def relapse_game():
-            playing_ball.goto(0, 0)
-
+def game_loop():cle
+    while int(player_score.score) < 10 and int(computer_score.score) < 10:
         # Colliding with the bar
         if is_collision(playing_ball, player) or is_collision(playing_ball, computer):
             playing_ball.bounce_x()
@@ -84,7 +84,6 @@ def game_loop():
             print("Colliding with the vertical bar")
             playing_ball.bounce_y()
 
-        # todo: score alignment must be symmetrical
         # Score Increment
         if playing_ball.xcor() > HORIZONTAL_LIMIT[1]:
             player_score.increase_score()
