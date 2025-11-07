@@ -43,7 +43,7 @@ while True:
 
     # Conditions of the game
     if snk.head.distance(food) < 20:
-        food.spawn(WIDTH, HEIGHT)
+        food.spawn()
         snk.grow_snake()
         score.increase_score()
 
@@ -53,11 +53,5 @@ while True:
 
     snk.move()
     scr.update()
-    time.sleep(0.09)
-    print(f"snake head position is {snk.head.pos}")
+    time.sleep(0.05)
 scr.exitonclick()
-
-
-
-
-# Start building the calculator after finishing this start by implementing this.

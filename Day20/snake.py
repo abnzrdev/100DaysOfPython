@@ -21,7 +21,7 @@ class Snake(Turtle):
 
         """
             Moves the snake forward by updating the position of each segment.
-            Arguments: None
+            Args: None
         """
 
         for i in range(len(self.segments) - 1, 0, -1):
@@ -34,7 +34,7 @@ class Snake(Turtle):
 
         """
         Changes the direction of the snake's head.
-        Arguments:
+        Args:
             direction (str): "right", "left", "up", "down"
         """
 
@@ -51,7 +51,7 @@ class Snake(Turtle):
 
         """
         Adds a new segment to the end of the snake.
-        Arguments: None
+        Args: None
         """
 
         x_cor = self.segments[self.length_of_snake - 1].xcor() - 20
@@ -61,10 +61,14 @@ class Snake(Turtle):
         add_segment.penup()
         add_segment.goto(x_cor, y_cor)
         self.segments.append(add_segment)
-        self.body_positions.append((add_segment.xcor(), add_segment.ycor()))
 
     # TODO: IMPLEMENT THE COLLISION LOGIC SEPARATELY CAUSE THERE IS NO WAY TO HECK IT THE SHORTER DISTANCE OTHER THAN THIS AND READ ABOUT IT IN CHATGPT
     def collision_action(self):
+        """Resets the snake by hiding all segments and reinitializing.
+
+        Args: None
+        """
+
         for segment in self.segments:
             segment.hideturtle()
         self.__init__()
