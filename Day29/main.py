@@ -29,35 +29,38 @@ window.resizable(False,False)
 
 # ======================== Password Generator ================
 
-def generate_password(length: int = PASSWORD_LENGTH) -> str:
+def generate_password(length: int = PASSWORD_LENGTH):
     """
     Generate a random password using random
     Ensures at least one lowercase, one uppercase, one digit and one symbol.
     """
-    if length < MIN_PASSWORD_LENGTH:
-        raise ValueError("length must be at least 4 to include all character types")
+    try:
+        if length < MIN_PASSWORD_LENGTH:
+            raise ValueError("length must be at least 4 to include all character types")
 
-    lowers = string.ascii_lowercase
-    uppers = string.ascii_uppercase
-    digits = string.digits
-    symbols = PASSWORD_SYMBOLS
+        lowers = string.ascii_lowercase
+        uppers = string.ascii_uppercase
+        digits = string.digits
+        symbols = PASSWORD_SYMBOLS
 
-    # Guarantee one of each required type
-    password_chars = [
-        random.choice(lowers),
-        random.choice(uppers),
-        random.choice(digits),
-        random.choice(symbols),
-    ]
+        # Guarantee one of each required type
+        password_chars = [
+            random.choice(lowers),
+            random.choice(uppers),
+            random.choice(digits),
+            random.choice(symbols),
+        ]
 
-    all_chars = lowers + uppers + digits + symbols
-    password_chars += [random.choice(all_chars) for _ in range(length - 4)]
+        all_chars = lowers + uppers + digits + symbols
+        password_chars += [random.choice(all_chars) for _ in range(length - 4)]
 
-    random.shuffle(password_chars)
-    password="".join(password_chars)
-    pyperclip.copy(password)
-    password_entry.delete(0, END)
-    password_entry.insert(0, password)
+        random.shuffle(password_chars)
+        password="".join(password_chars)
+        pyperclip.copy(password)
+        password_entry.delete(0, END)
+        password_entry.insert(0, password)
+    except Exception as e:
+        messagebox.showerror(title="Error", message=f"Could not generate password: {e}")
 
 # ========================= Taking the file ====================
 def save_password():
@@ -77,21 +80,32 @@ def save_password():
             )
         )
         if response:
-            with open(DATA_FILE, "a") as file:
-                file.write(f"{website} | {username} | {password}\n")
-
-            website_entry.delete(0, END)
-            password_entry.delete(0, END)
+            try:
+                with open(DATA_FILE, "a") as file:
+                    file.write(f"{website} | {username} | {password}\n")
+            except IOError as e:
+                messagebox.showerror(title="Error", message=f"Could not save to file: {e}")
+            else:
+                website_entry.delete(0, END)
+                password_entry.delete(0, END)
+                messagebox.showinfo(title="Success", message="Password saved successfully!")
     else:
         messagebox.showerror(title="Error", message="Don't leave any place empty")
 
 # ========================= UI SETUP =========================
 
 # Canvas with logo
-logo = PhotoImage(file=LOGO_FILE)
-canvas = Canvas(width=logo.width(), height=logo.height(), bg=BACKGROUND, highlightthickness=0)
-canvas.create_image(logo.width() // 2, logo.height() // 2, image=logo)
-canvas.grid(row=0, column=1)
+try:
+    logo = PhotoImage(file=LOGO_FILE)
+    canvas = Canvas(width=logo.width(), height=logo.height(), bg=BACKGROUND, highlightthickness=0)
+    canvas.create_image(logo.width() // 2, logo.height() // 2, image=logo)
+    canvas.grid(row=0, column=1)
+except Exception as e:
+    # If logo fails to load, create a simple canvas without image
+    canvas = Canvas(width=200, height=200, bg=BACKGROUND, highlightthickness=0)
+    canvas.create_text(100, 100, text="Password\nManager", fill="white", font=(FONT_NAME, 16))
+    canvas.grid(row=0, column=1)
+    print(f"Warning: Could not load logo: {e}")
 
 # Website
 website_label = Label(text="Website:", bg=BACKGROUND, fg="white", font=(FONT_NAME, LABEL_FONT_SIZE))
