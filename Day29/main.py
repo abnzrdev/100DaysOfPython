@@ -1,5 +1,8 @@
 from tkinter import *
 from tkinter import messagebox
+import random
+import string
+import pyperclip
 
 # Constants
 BACKGROUND = "#120321"
@@ -8,10 +11,42 @@ FONT_NAME = "Courier"
 # Creating the window
 window = Tk()
 window.title("Password Manager")
-window.config(padx=50, pady=20, bg=BACKGROUND)
+window.config(padx=50, pady=50, bg=BACKGROUND)
 window.resizable(False,False)
 
-# ========================= Taking the file ==================
+# ======================== Password Generator ================
+
+def generate_password(length: int = 12) -> str:
+    """
+    Generate a random password using random
+    Ensures at least one lowercase, one uppercase, one digit and one symbol.
+    """
+    if length < 4:
+        raise ValueError("length must be at least 4 to include all character types")
+
+    lowers = string.ascii_lowercase
+    uppers = string.ascii_uppercase
+    digits = string.digits
+    symbols = "!@#$%^&*()-_=+[]{};:,.<>?/|"
+
+    # Guarantee one of each required type
+    password_chars = [
+        random.choice(lowers),
+        random.choice(uppers),
+        random.choice(digits),
+        random.choice(symbols),
+    ]
+
+    all_chars = lowers + uppers + digits + symbols
+    password_chars += [random.choice(all_chars) for _ in range(length - 4)]
+
+    random.shuffle(password_chars)
+    password="".join(password_chars)
+    pyperclip.copy(password)
+    password_entry.delete(0, END)
+    password_entry.insert(0, password)
+
+# ========================= Taking the file ====================
 def save_password():
     website = website_entry.get()
     username = username_entry.get()
@@ -64,7 +99,14 @@ password_label = Label(text="Password:", bg=BACKGROUND, fg="white", font=(FONT_N
 password_label.grid(row=3, column=0, sticky="e")
 password_entry = Entry(width=32)
 password_entry.grid(row=3, column=1, sticky="w")
-gen_pwd = Button(text="Generate Password", width=21, bg=BACKGROUND, fg="white", font=(FONT_NAME, 10))
+gen_pwd = Button(
+    text="Generate Password",
+    width=21,
+    bg=BACKGROUND,
+    fg="white",
+    font=(FONT_NAME, 10),
+    command=generate_password
+)
 gen_pwd.grid(row=3, column=2, sticky="ew")
 
 # Add Button
