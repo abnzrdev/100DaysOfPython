@@ -64,6 +64,13 @@ def generate_password(length: int = PASSWORD_LENGTH):
 
 # ========================= Taking the file ====================
 def save_password():
+    """
+    Validate and save website credentials to DATA_FILE after user confirmation.
+
+    Validates all fields are filled, shows confirmation dialog, appends data
+    in pipe-separated format (website | username | password), and clears
+    website/password fields on success. Displays error/success messages.
+    """
     website = website_entry.get()
     username = username_entry.get()
     password = password_entry.get()
