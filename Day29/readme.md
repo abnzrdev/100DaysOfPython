@@ -5,17 +5,22 @@
 A desktop password manager application built with Python's Tkinter library. This program allows users to:
 - Generate random secure passwords with one click
 - Store website credentials (website, username/email, password)
-- Save all passwords to a text file (`data.txt`)
-- Automatically copy generated passwords to clipboard
+- Save all passwords to a JSON file (`data.json`)
+- Search for saved passwords by website name
+- Automatically copy generated/retrieved passwords to clipboard
 
 **Current Features:**
 - GUI interface with logo
 - Random password generator (includes letters, numbers, and symbols)
 - Input fields for website, email/username, and password
 - "Generate Password" button that creates secure passwords
+- "Search Password" button to retrieve saved credentials
 - "Add" button to save credentials to file
 - Popup confirmation dialog when password is saved
 - All magic numbers extracted to constants at the top of the file
+- **JSON storage format** for reliable data persistence
+- **Comprehensive error handling** for file operations, JSON parsing, and clipboard access
+- **Graceful fallbacks** when logo fails to load or data file is missing/corrupted
 
 ---
 
@@ -23,32 +28,24 @@ A desktop password manager application built with Python's Tkinter library. This
 
 ### 🔴 Security & Reliability Issues
 
-1. **Plain-text password storage** - Passwords are currently saved unencrypted in `data.txt`. This is a security risk. Future versions should implement encryption using libraries like `cryptography.fernet`.
-
-2. **No error handling** - File operations lack try-except blocks. The program may crash if `data.txt` cannot be written or if `logo.png` is missing.
-
-### 🟡 Code Quality Improvements
-
-3. **Fragile data format** - Uses pipe-separated values (`|`). If a user enters `|` in their website name, the data format breaks. Should migrate to JSON or CSV:
-   ```python
-   import json
-   data = {"website": website, "username": username, "password": password}
-   ```
-
-4. **Global variables** - All widgets and state are global. Should refactor to a `PasswordManager` class for better organization.
-
-5. **Hardcoded file paths** - `data.txt` and `logo.png` use relative paths. Should use `os.path.join()` or `pathlib` for cross-platform compatibility.
+1. **Plain-text password storage** - Passwords are currently saved unencrypted in `data.json`. This is a security risk. Future versions should implement encryption using libraries like `cryptography.fernet`.
 
 ### 🟢 Feature Enhancements
 
-6. **Search functionality** - No way to retrieve saved passwords. Should add a search button to find credentials by website name.
+5. **Edit/Delete operations** - Users cannot modify or remove saved passwords. Should add edit and delete buttons in search results.
 
-7. **Edit/Delete operations** - Users cannot modify or remove saved passwords.
+6. **Password strength indicator** - No visual feedback on whether generated password is weak/medium/strong. Could add a strength meter.
 
-8. **Password strength indicator** - No feedback on whether generated password is weak/medium/strong.
+7. **Configurable default email** - Email address is hardcoded as a constant. Should be user-configurable via settings dialog.
 
-9. **Configurable default email** - Email address is hardcoded as a constant. Should be user-configurable via settings.
+8. **Clipboard security** - Generated passwords remain in clipboard indefinitely. Should auto-clear after 30-60 seconds for security.
 
-10. **Clipboard security** - Generated passwords remain in clipboard indefinitely. Should auto-clear after 30 seconds.
+9. **Password history** - No ability to view previously used passwords for a website or track when passwords were created/modified.
+
+10. **Export/Import functionality** - Users cannot backup or migrate their password database to another machine.
+
+11. **Master password protection** - No authentication required to access the application. Should implement a master password on startup.
+
+12. **Password expiry warnings** - No notifications when passwords are old and should be changed (e.g., 90+ days old).
 
 ---
