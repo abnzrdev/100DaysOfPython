@@ -56,7 +56,13 @@ def generate_password(length: int = PASSWORD_LENGTH):
 
         random.shuffle(password_chars)
         password="".join(password_chars)
-        pyperclip.copy(password)
+        try:
+            pyperclip.copy(password)
+        except (pyperclip.PyperclipException, PermissionError, OSError) as e:
+            print(f"Could not copy to clipboard: {e}")
+        except Exception as e:
+            print(f"Unexpected clipboard error: {e}")
+            messagebox.showwarning(title="Clipboard Access", message="Could not copy to clipboard")
         password_entry.delete(0, END)
         password_entry.insert(0, password)
     except Exception as e:
