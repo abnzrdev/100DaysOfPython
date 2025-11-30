@@ -11,20 +11,25 @@ def read_csv_to_dict(file_path: str,
     - Trims whitespace from headers and string cells.
     - If duplicate keys exist, later rows overwrite earlier ones (pandas behavior).
     """
-
-    df = pd.read_csv(file_path, skipinitialspace=skipinitialspace)
-    # Normalize column names -- cleaning
+    try:
+        df = pd.read_csv(file_path, skipinitialspace=skipinitialspace)
+    except FileNotFoundError:
+        print(f"Error Happened : The Csv file is not found")
+        return {}
+        # Normalize column names -- cleaning
     df.columns = df.columns.str.strip()
-    if key_col not in df.columns or value_col not in df.columns:
-        raise ValueError(f"CSV must contain columns '{key_col}' and '{value_col}'. Found: {list(df.columns)}")
 
-    # Convert to strings (safe for NaN) and strip whitespace
-    keys = df[key_col].astype(str).str.strip().tolist()
-    vals = df[value_col].astype(str).str.strip().tolist()
+    try:
+        if key_col not in df.columns or value_col not in df.columns:
+            raise ValueError(f"CSV must contain columns '{key_col}' and '{value_col}'. Found: {list(df.columns)}")
 
-    # Dict comprehension: build mapping. Later values win on duplicate keys.
-    mapping = {k: v for k, v in zip(keys, vals)}
-    return mapping
+        keys = df[key_col].astype(str).str.strip().tolist()
+        vals = df[value_col].astype(str).str.strip().tolist()
+        mapping = {k: v for k, v in zip(keys, vals)}
+        return mapping
+    except ValueError as e:
+        print(f"Error: {e}")
+        return {}
 
 def parse_letters_input(s: str) -> List[str]:
     """
@@ -80,6 +85,15 @@ def lookup_values_from_csv(file_path: str,
 
 
 if __name__ == "__main__":
-    letters = input("Enter your name : ").strip()
-    values = lookup_values_from_csv('nato_phonetic_alphabet.csv', letters, skipinitialspace=True, allow_missing=True, missing_value=None)
-    print("Nato Phonetic List : ", values)
+    try:
+        letters = input("Enter your name: ").strip()
+        values = lookup_values_from_csv(
+            'nato_phonetic_alphabet.csv',  # Fixed typo
+            letters,
+            skipinitialspace=True,
+            allow_missing=True,
+            missing_value=None
+        )
+        print("Nato Phonetic List:", values)
+    except (FileNotFoundError, ValueError, KeyError) as e:
+        print(f"Error processing request: {e}")
