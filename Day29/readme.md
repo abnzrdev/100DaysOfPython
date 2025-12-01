@@ -32,20 +32,20 @@ A desktop password manager application built with Python's Tkinter library. This
 
 ### 🟢 Feature Enhancements
 
-5. **Edit/Delete operations** - Users cannot modify or remove saved passwords. Should add edit and delete buttons in search results.
+1. **Edit/Delete operations** - Users cannot modify or remove saved passwords. Should add edit and delete buttons in search results.
 
-6. **Password strength indicator** - No visual feedback on whether generated password is weak/medium/strong. Could add a strength meter.
+2. **Password strength indicator** - No visual feedback on whether generated password is weak/medium/strong. Could add a strength meter.
 
-7. **Configurable default email** - Email address is hardcoded as a constant. Should be user-configurable via settings dialog.
+3. **Configurable default email** - Email address is hardcoded as a constant. Should be user-configurable via settings dialog.
 
-8. **Clipboard security** - Generated passwords remain in clipboard indefinitely. Should auto-clear after 30-60 seconds for security.
+4. **Clipboard security** - Generated passwords remain in clipboard indefinitely. Should auto-clear after 30-60 seconds for security.
 
-9. **Password history** - No ability to view previously used passwords for a website or track when passwords were created/modified.
+5. **Password history** - No ability to view previously used passwords for a website or track when passwords were created/modified.
 
-10. **Export/Import functionality** - Users cannot backup or migrate their password database to another machine.
+7. **Export/Import functionality** - Users cannot backup or migrate their password database to another machine.
 
-11. **Master password protection** - No authentication required to access the application. Should implement a master password on startup.
+8. **Master password protection** - No authentication required to access the application. Should implement a master password on startup.
 
-12. **Password expiry warnings** - No notifications when passwords are old and should be changed (e.g., 90+ days old).
+9. **Password expiry warnings** - No notifications when passwords are old and should be changed (e.g., 90+ days old).
 
 ---
