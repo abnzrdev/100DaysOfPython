@@ -31,8 +31,8 @@ def amharic_weekday(date_obj: dt.date | dt.datetime | None = None) -> str:
     return AMHARIC_DAYS[date_obj.weekday()]
 
 # Email Credentials
-MY_EMAIL = "abnzr.dev@gmail.com"
-PASSWORD = "qjvm hsin ikdm sbwk"
+MY_EMAIL = "your email"
+PASSWORD = "your app password"
 
 
 def weekday_name(date_obj: dt.date | dt.datetime | None = None) -> str:
